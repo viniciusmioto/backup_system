@@ -1,15 +1,11 @@
-CC = gcc
-CFLAGS = -Wall
-OBJECTS = ConexaoRawSocket.o
-PROG = client server
+CC = g++
+OBJECTS = ConexaoRawSocket.o 
 
-all: $(PROG)
+all: client server
 
-client: client.c $(OBJECTS)
-	$(CC) $(CFLAGS) client.c $(OBJECTS) -o client
+client: client.o $(OBJECTS)
 
-server: server.c $(OBJECTS)
-	$(CC) $(CFLAGS) server.c $(OBJECTS) -o server
+server: server.o $(OBJECTS)
 
 clean:
 	-rm -f *.o
