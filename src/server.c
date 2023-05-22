@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ConexaoRawSocket.h"
+#include "message.h"
 
 int main()
 {
+    // interface de rede eno1
     int socket = ConexaoRawSocket("lo");
     if (socket < 0)
     {
@@ -11,11 +13,12 @@ int main()
         exit(1);
     }
 
-    char buffer[BUFSIZ];
-
-    recv(socket, buffer, BUFSIZ, 0);
-
-    printf("%s\n", buffer);
+    message_t message;
+    while(1) {
+        recv(socket, &message, 67, 0);
+        if(message.init_marker == 126)
+            printf("%s\n", message.data);
+    }
 
     return 0;
 }
