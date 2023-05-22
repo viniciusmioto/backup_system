@@ -3,6 +3,8 @@
 #include "ConexaoRawSocket.h"
 #include "message.h"
 
+int msg_counter = 0;
+
 int main()
 {
     // interface de rede eno1 (dois computadores)
@@ -18,10 +20,14 @@ int main()
     message_t message;
     message.init_marker = 126;
 
-    strcpy(message.data, "hello world");
-
-    memcpy(buffer, &message, 67);
-    send(socket, buffer, 67, 0);
+    while (msg_counter < 10)
+    {
+        strcpy(message.data, "hello world");
+        message.sequence = msg_counter++;
+        printf("sequence: %d\n", message.sequence);
+        memcpy(buffer, &message, 67);
+        send(socket, buffer, 67, 0);
+    }
 
     return 0;
 }

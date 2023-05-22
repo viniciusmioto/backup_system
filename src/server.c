@@ -3,6 +3,8 @@
 #include "ConexaoRawSocket.h"
 #include "message.h"
 
+int msg_counter = 0;
+
 int main()
 {
     // interface de rede eno1
@@ -17,7 +19,11 @@ int main()
     while(1) {
         recv(socket, &message, 67, 0);
         if(message.init_marker == 126)
-            printf("%s\n", message.data);
+            if (message.sequence == msg_counter)
+            {
+                printf("%s\n", message.data);
+                msg_counter++;
+            }
     }
 
     return 0;
