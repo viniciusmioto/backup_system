@@ -9,7 +9,9 @@
 #include <string>
 
 #include "ConexaoRawSocket.h"
-#include "message.h"
+
+
+#define MAX_DATA_SIZE 63
 
 using namespace std;
 

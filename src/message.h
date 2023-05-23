@@ -1,6 +1,13 @@
+#ifndef MESSAGE_H
+#define MESSAGE_H
+
+#include "file_handler.h"
+
 #define MAX_SIZE 67
 #define MAX_DATA_SIZE 63
 #define INIT_MARKER 126
+
+using namespace std;
 
 typedef enum {
     BACKUP_1_ARQ = 0,
@@ -25,3 +32,7 @@ typedef struct message {
     unsigned char data[63];
     unsigned int parity :8;
 } message_t;
+
+void mount_package(int file_size, string file_name, int file_position, string file_content, message_t &message, int msg_counter);
+
+#endif
