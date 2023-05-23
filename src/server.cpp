@@ -1,31 +1,8 @@
-#include <bits/stdc++.h>
-#include <iostream>
-#include <fstream>
-#include "ConexaoRawSocket.h"
-#include "message.h"
+#include "file_handler.h"
 
 using namespace std;
 
 int msg_counter = 0;
-
-
-void write_to_file(const char* filename, unsigned char data[MAX_DATA_SIZE], bool append) {
-    ofstream file;
-
-    if (append) {
-        file.open(filename, ios::app);
-    } else {
-        file.open(filename);
-    }
-
-    if (file.is_open()) {
-        file << data;
-        file.close();
-
-    } else {
-        cout << "\033[0;31mError opening the file.\033[0m" << std::endl;
-    }
-}
 
 int main()
 {
