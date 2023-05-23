@@ -43,6 +43,6 @@ typedef struct message {
     * \param message
     * \param msg_counter
 */
-void mount_package(int file_size, string file_name, int file_position, string file_content, message_t &message, int *msg_counter);
+void mount_package(int *file_size, string file_name, int *file_position, string file_content, message_t &message, int *msg_counter);
 
 #endif
