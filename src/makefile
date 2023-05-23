@@ -1,5 +1,5 @@
 CC = g++
-OBJECTS = ConexaoRawSocket.o 
+OBJECTS = ConexaoRawSocket.o  file_handler.o
 
 all: client server
 
