@@ -1,4 +1,4 @@
-#include "file_handler.h"
+#include "message.h"
 
 using namespace std;
 
@@ -37,20 +37,20 @@ int main() {
             file_size = get_file_size(file_name); // pega o tamanho total do arquivo
 
             while (file_size > 0) {
+                mount_package(file_size, file_name, file_position, file_content, message, msg_counter);
 
-                if (file_size > 0)
-                    file_content = get_file_content(file_name, file_position, file_size);
-                memcpy(&message.data, file_content.c_str(), sizeof(message.data)); // read the file content
-
-                message.sequence = msg_counter++;
-                message.type = BACKUP_1_ARQ;
+                msg_counter++;
 
                 memcpy(buffer, &message, MAX_SIZE);
                 send(socket, buffer, MAX_SIZE, 0); // send the file content
 
                 file_position += 64;
                 file_size -= 64;
+                cout << "file_size: " << file_size << endl;
+                cout << "msg: " << message.data << endl;
+                cout << "msg_counter: " << msg_counter << endl;
             }
+
             memcpy(&message.data, "", MAX_SIZE);
             message.sequence = msg_counter++;
             message.type = END_FILE;
