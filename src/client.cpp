@@ -38,9 +38,7 @@ int main() {
 
             // loop until get all content (limit of 63 bytes each message)
             while (file_size > 0) {
-                mount_package(file_size, file_name, file_position, file_content, message, msg_counter);
-
-                msg_counter++;
+                mount_package(file_size, file_name, file_position, file_content, message, &msg_counter);
 
                 memcpy(buffer, &message, MAX_SIZE);
                 send(socket, buffer, MAX_SIZE, 0); // send the file content
