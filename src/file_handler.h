@@ -15,10 +15,28 @@
 
 using namespace std;
 
+/*!
+    * \brief Read a file and get its content limited by $MAX_DATA_SIZE bytes
+    * \param file_name
+    * \param start_position
+    * \param file_size
+    * \return string with file content
+*/
 string get_file_content(const string &file_name, unsigned int start_position, int file_size);
 
+/*!
+    * \brief Get the size of a file
+    * \param file_name
+    * \return unsigned int with file size
+*/
 unsigned int get_file_size(const string &file_name);
 
+/*!
+    * \brief Write data to a file
+    * \param filename
+    * \param data
+    * \param append
+*/
 void write_to_file(const char* filename, unsigned char data[MAX_DATA_SIZE], bool append);
 
 #endif

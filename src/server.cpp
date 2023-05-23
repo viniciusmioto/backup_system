@@ -6,13 +6,13 @@ int msg_counter = 0;
 
 int main()
 {
-    // interface de rede eno1
+    // network interface eno1 (two computers)
     char sock[] = "lo";
     int socket = ConexaoRawSocket(sock);
 
     if (socket < 0)
     {
-        perror("\033[0;31m ### ERRO: Falha ao criar conexão raw socket. \033[0m\n");
+        perror("\033[0;31m ### ERRO: Could not connect to socket. \033[0m\n");
         exit(1);
     }
 

@@ -33,6 +33,16 @@ typedef struct message {
     unsigned int parity :8;
 } message_t;
 
+
+/*!
+    * \brief Receives information of a message and mount a package to be sent
+    * \param file_size
+    * \param file_name
+    * \param file_position
+    * \param file_content
+    * \param message
+    * \param msg_counter
+*/
 void mount_package(int file_size, string file_name, int file_position, string file_content, message_t &message, int msg_counter);
 
 #endif
