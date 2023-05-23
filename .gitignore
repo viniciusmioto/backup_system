@@ -54,3 +54,4 @@ dkms.conf
 # Executables
 client
 server
+.vscode
