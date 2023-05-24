@@ -17,6 +17,6 @@
     * \param device
     * \return int with socket descriptor
 */
-int ConexaoRawSocket(char *device);
+int ConexaoRawSocket(const char *device);
 
 #endif

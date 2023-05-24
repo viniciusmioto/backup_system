@@ -6,7 +6,8 @@ int msg_counter = 0;
 
 int main() {
     // interface de rede eno1 (dois computadores)
-    int socket = ConexaoRawSocket("lo");
+    const char *interface = "lo";
+    int socket = ConexaoRawSocket(interface);
 
     if (socket < 0) {
         perror("\033[0;31m ### ERRO: Falha ao criar conexão raw socket. \033[0m\n");
