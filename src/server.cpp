@@ -32,17 +32,16 @@ int main() {
 
                     cout << "\033[0;32mbackup: " << file_name << " started...\033[0m" << endl;
 
-                    msg_counter++;
-
                 } else if (message.type != END_FILE) {
                     write_to_file(file_name, message.data, true);
-
-                    msg_counter++;
 
                 } else {
                     msg_counter = 0;
                     cout << "\033[0;32mbackup: " << file_name << " complete.\033[0m" << endl;
+                
                 }
+
+                msg_counter++;
             }
         }
     }

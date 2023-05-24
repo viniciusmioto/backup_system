@@ -56,3 +56,6 @@ client
 server
 .vscode
 output*
+
+# Tests
+*.txt

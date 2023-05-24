@@ -10,7 +10,9 @@
 #include <linux/if.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+#include <iostream>
+
+using namespace std;
 
 /*!
     * \brief Create a raw socket connection
