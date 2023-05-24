@@ -2,7 +2,7 @@
 
 using namespace std;
 
-string get_file_content(const string &file_name, unsigned int start_position, int file_size) {
+string get_file_content(string file_name, unsigned int start_position, int file_size) {
     ifstream file(file_name);
 
     if (!file) {
@@ -25,7 +25,7 @@ string get_file_content(const string &file_name, unsigned int start_position, in
     return buffer; // Convert the stringstream to a string
 }
 
-unsigned int get_file_size(const string &file_name) {
+unsigned int get_file_size(string file_name) {
     ifstream arq(file_name);
 
     if (!arq) {
@@ -39,7 +39,7 @@ unsigned int get_file_size(const string &file_name) {
     return buffer.str().size(); // Convert the stringstream to a string
 }
 
-void write_to_file(const string &filename, unsigned char data[MAX_DATA_SIZE], bool append) {
+void write_to_file(string filename, unsigned char data[MAX_DATA_SIZE], bool append) {
     ofstream file;
 
     if (append) {

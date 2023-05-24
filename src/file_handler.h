@@ -23,14 +23,14 @@ using namespace std;
     * \param file_size
     * \return string with file content
 */
-string get_file_content(const string &file_name, unsigned int start_position, int file_size);
+string get_file_content(string file_name, unsigned int start_position, int file_size);
 
 /*!
     * \brief Get the size of a file
     * \param file_name
     * \return unsigned int with file size
 */
-unsigned int get_file_size(const string &file_name);
+unsigned int get_file_size(string file_name);
 
 /*!
     * \brief Write data to a file
@@ -38,6 +38,6 @@ unsigned int get_file_size(const string &file_name);
     * \param data
     * \param append
 */
-void write_to_file(const string &filename, unsigned char data[MAX_DATA_SIZE], bool append);
+void write_to_file(string filename, unsigned char data[MAX_DATA_SIZE], bool append);
 
 #endif
