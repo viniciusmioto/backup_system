@@ -14,6 +14,4 @@ void mount_package(int *file_size, string file_name, int *file_position, string 
 
     *file_position += (MAX_DATA_SIZE);
     *file_size -= (MAX_DATA_SIZE);
-
-    cout << message.data << endl;
 }
