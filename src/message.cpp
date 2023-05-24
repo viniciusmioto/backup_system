@@ -12,6 +12,8 @@ void mount_package(int *file_size, string file_name, int *file_position, string 
     *msg_counter += 1;
     message.type = BACKUP_1_ARQ;
 
-    *file_position += (MAX_DATA_SIZE + 1);
-    *file_size -= (MAX_DATA_SIZE + 1);
+    *file_position += (MAX_DATA_SIZE);
+    *file_size -= (MAX_DATA_SIZE);
+
+    cout << message.data << endl;
 }
