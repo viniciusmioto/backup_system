@@ -37,9 +37,7 @@ int main() {
             file_size = get_file_size(file_name);
 
             // send first message to inform the file name
-            // memcpy(&message.data, file_name.c_str(), sizeof(file_name.c_str()));
-            memcpy(&message.data, "out.txt", sizeof("out.txt") + 1);
-            cout << "msg_counter: " << msg_counter << endl;
+            memcpy(&message.data, file_name.c_str(), MAX_SIZE);
             message.type = FILE_NAME;
             memcpy(buffer, &message, MAX_SIZE);
             send(socket, buffer, MAX_SIZE, 0);

@@ -26,17 +26,15 @@ int main() {
                 if (message.type == FILE_NAME) {
                     // memcpy(file_name.data(), message.data, sizeof(message.data));
 
+                    // get file name and insert a 'b' in the beginning
                     file_name = (char*)(message.data);
+                    file_name.insert(0, 1, 'b');
 
-                    cout << "\033[0;32mbackup: " << file_name << " started.\033[0m" << endl;
-
-                    cout << "file_name: " << message.data << endl;
+                    cout << "\033[0;32mbackup: " << file_name << " started...\033[0m" << endl;
 
                     msg_counter++;
 
-                }
-
-                if (message.type != END_FILE) {
+                } else if (message.type != END_FILE) {
                     write_to_file(file_name, message.data, true);
 
                     msg_counter++;
