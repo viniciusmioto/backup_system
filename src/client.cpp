@@ -34,7 +34,14 @@ int main() {
             cout << "file name > ";
             cin >> file_name;
 
-            file_size = get_file_size(file_name); 
+            file_size = get_file_size(file_name);
+
+            // send first message to inform the file name
+            memcpy(&message.data, file_name.c_str(), MAX_SIZE);
+            message.type = FILE_NAME;
+            memcpy(buffer, &message, MAX_SIZE);
+            send(socket, buffer, MAX_SIZE, 0);
+            message.sequence = msg_counter++;
 
             // loop until get all content (limit of 63 bytes each message)
             while (file_size > 0) {
@@ -48,7 +55,6 @@ int main() {
             memcpy(&message.data, "", MAX_SIZE);
             message.sequence = msg_counter++;
             message.type = END_FILE;
-
             memcpy(buffer, &message, MAX_SIZE);
             send(socket, buffer, MAX_SIZE, 0);
 

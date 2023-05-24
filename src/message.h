@@ -11,6 +11,7 @@ using namespace std;
 
 typedef enum {
     BACKUP_1_ARQ = 0,
+    FILE_NAME = 6,
     END_FILE = 9,
     EXIT_CLIENT = 11,
     ERRO = 12,
