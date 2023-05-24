@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <cstring>
 
 #include "ConexaoRawSocket.h"
 
@@ -37,6 +38,6 @@ unsigned int get_file_size(const string &file_name);
     * \param data
     * \param append
 */
-void write_to_file(const char* filename, unsigned char data[MAX_DATA_SIZE], bool append);
+void write_to_file(const string &filename, unsigned char data[MAX_DATA_SIZE], bool append);
 
 #endif

@@ -39,7 +39,7 @@ unsigned int get_file_size(const string &file_name) {
     return buffer.str().size(); // Convert the stringstream to a string
 }
 
-void write_to_file(const char* filename, unsigned char data[MAX_DATA_SIZE], bool append) {
+void write_to_file(const string &filename, unsigned char data[MAX_DATA_SIZE], bool append) {
     ofstream file;
 
     if (append) {
