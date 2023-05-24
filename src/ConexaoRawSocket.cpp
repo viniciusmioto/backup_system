@@ -10,7 +10,7 @@ int ConexaoRawSocket(const char *device)
     soquete = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); /*cria socket*/
     if (soquete == -1)
     {
-        cout << "Erro no Socket" << endl;
+        cout << "\033[0;31mErro no Socket\033[0m" << endl;
         exit(-1);
     }
 
@@ -18,7 +18,7 @@ int ConexaoRawSocket(const char *device)
     memcpy(ir.ifr_name, device, sizeof(device));
     if (ioctl(soquete, SIOCGIFINDEX, &ir) == -1)
     {
-        cout << "Erro no ioctl" << endl;
+        cout << "\033[0;31mErro no ioctl\033[0m" << endl;
         exit(-1);
     }
 
@@ -28,7 +28,7 @@ int ConexaoRawSocket(const char *device)
     endereco.sll_ifindex = ir.ifr_ifindex;
     if (bind(soquete, (struct sockaddr *)&endereco, sizeof(endereco)) == -1)
     {
-        cout << "Erro no bind" << endl;
+        cout << "\033[0;31mErro no bind\033[0m" << endl;
         exit(-1);
     }
 
@@ -37,7 +37,7 @@ int ConexaoRawSocket(const char *device)
     mr.mr_type = PACKET_MR_PROMISC;
     if (setsockopt(soquete, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mr, sizeof(mr)) == -1)
     {
-        cout << "Erro ao fazer setsockopt" << endl;
+        cout << "\033[0;31mErro ao fazer setsockopt\033[0m" << endl;
         exit(-1);
     }
 
