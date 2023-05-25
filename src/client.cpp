@@ -25,7 +25,7 @@ int main() {
         string fileName;
         string fileContent;
 
-        if (msgCounter >= 63)
+        if (msgCounter >= MAX_DATA_SIZE)
             msgCounter = 0;
 
         cout << "\033[1;36mSELECT ONE OPTION" << endl;
@@ -49,15 +49,16 @@ int main() {
             memcpy(buffer, &message, MAX_SIZE);
             send(socket, buffer, MAX_SIZE, 0);
 
-            // loop until get all content (limit of 63 bytes each message)
+            // loop until get all content (limit of MAX_DATA_SIZE bytes each message)
             while (fileSize > 0) {
 
                 mount_package(&fileSize, fileName, &filePosition, fileContent, message, msgCounter);
-                msgCounter++;
 
                 memcpy(buffer, &message, MAX_SIZE);
+                // cout << message.sequence << ": " << message.data << endl;
                 send(socket, buffer, MAX_SIZE, 0); // send the file content
 
+                msgCounter++;
             }
 
             // send last message to inform that the whole file was sent

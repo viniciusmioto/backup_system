@@ -13,19 +13,27 @@ string get_file_content(string fileName, unsigned int start_position, int fileSi
     file.seekg(start_position);
 
     // Read the file buffer into the stringstream
-    if (fileSize >= 63) {
+    if (fileSize >= MAX_DATA_SIZE) {
         char buffer[MAX_DATA_SIZE];
         file.read(buffer, MAX_DATA_SIZE);
+        
+        cout << fileSize << ": " << buffer << endl;
+        
         return buffer;
     }  
     if (fileSize == 1) {
         char buffer_char;
         file.get(buffer_char);
+
+        cout << fileSize << ": " << buffer_char << endl;
+
         return string(1, buffer_char);
     }
 
     char buffer[fileSize];
     file.read(buffer, fileSize);
+
+    cout << fileSize << ": " << buffer << endl;
 
     return buffer; // Convert the stringstream to a string
 }

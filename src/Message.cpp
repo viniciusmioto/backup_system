@@ -18,7 +18,7 @@ Message::Message(unsigned int sizeValue, unsigned int sequenceValue,
     size = sizeValue;
     sequence = sequenceValue;
     type = typeValue;
-    std::copy(dataValue, dataValue + 63, data);
+    std::copy(dataValue, dataValue + MAX_DATA_SIZE, data);
     parity = parityValue;
 }
 

@@ -19,7 +19,7 @@ int main() {
 
     while (1) {
 
-        if (msgCounter >= 63)
+        if (msgCounter >= MAX_DATA_SIZE)
             msgCounter = 0;
 
         recv(socket, &message, MAX_SIZE, 0); // receive the message from the client
@@ -37,6 +37,7 @@ int main() {
                     cout << "\033[0;32mbackup: " << fileName << " started...\033[0m" << endl;
 
                 } else if (message.type != END_FILE && message.data != NULL) {
+                    cout << message.sequence << ": " << message.data << endl;
                     write_to_file(fileName, message.data, true);
 
                 } else {

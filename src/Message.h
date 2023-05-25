@@ -31,7 +31,7 @@ public:
     unsigned int size : 6;
     unsigned int sequence : 6;
     unsigned int type : 4;
-    unsigned char data[63];
+    unsigned char data[MAX_DATA_SIZE];
     unsigned int parity : 8;
 
     Message();
