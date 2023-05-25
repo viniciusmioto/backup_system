@@ -14,15 +14,17 @@ int main() {
         exit(1);
     }
 
-    unsigned char buffer[MAX_SIZE];
-    Message message;
-    int option;
-    int filePosition = 0;
-    int fileSize = 0;
-    string fileName;
-    string fileContent;
+    int option = 0;
 
-    while (option != 3) {
+    while (option != 9) {
+
+        unsigned char buffer[MAX_SIZE];
+        Message message;
+        int filePosition = 0;
+        int fileSize = 0;
+        string fileName;
+        string fileContent;
+
         if (msgCounter >= 63)
             msgCounter = 0;
 
@@ -44,21 +46,20 @@ int main() {
             message.type = FILE_NAME;
             msgCounter = 0;
             message.sequence = 0;
-            cout << "sending: " << msgCounter << endl;
+            cout << "sending: " << message.sequence << " " << message.data << endl;
             memcpy(buffer, &message, MAX_SIZE);
             send(socket, buffer, MAX_SIZE, 0);
             msgCounter = 1;
 
             // loop until get all content (limit of 63 bytes each message)
             while (fileSize > 0) {
-                if (msgCounter >= 63)
-                    msgCounter = 0;
 
-                mount_package(&fileSize, fileName, &filePosition, fileContent, message, &msgCounter);
+                mount_package(&fileSize, fileName, &filePosition, fileContent, message, msgCounter);
 
                 memcpy(buffer, &message, MAX_SIZE);
                 send(socket, buffer, MAX_SIZE, 0); // send the file content
-                cout << "sending: " << msgCounter << endl;
+                cout << "sending: " << message.sequence << " " << message.data << endl;
+                msgCounter++;
             }
 
             // send last message to inform that the whole file was sent

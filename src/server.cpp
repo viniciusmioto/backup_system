@@ -22,8 +22,12 @@ int main() {
         if (msgCounter >= 63)
             msgCounter = 0;
 
-        recv(socket, &message, MAX_SIZE, 0);     // receive the message from the client
+        recv(socket, &message, MAX_SIZE, 0); // receive the message from the client
+
         if (message.initMarker == INIT_MARKER) { // check if the message is valid
+
+            cout << "received: " << message.sequence << " " << message.data << endl;
+
 
             if (message.sequence == msgCounter) { // check sequence
 

@@ -47,6 +47,6 @@ public:
  * \param message
  * \param msgCounter
  */
-void mount_package(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int *msgCounter);
+void mount_package(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int msgCounter);
 
 #endif
