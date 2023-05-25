@@ -26,9 +26,6 @@ int main() {
 
         if (message.initMarker == INIT_MARKER) { // check if the message is valid
 
-            cout << "received: " << message.sequence << " " << message.data << endl;
-
-
             if (message.sequence == msgCounter) { // check sequence
 
                 if (message.type == FILE_NAME) {
@@ -51,7 +48,6 @@ int main() {
                 msgCounter++;
             }
 
-            cout << "waiting for: " << msgCounter << endl;
         }
     }
 

@@ -45,21 +45,19 @@ int main() {
             memcpy(&message.data, fileName.c_str(), MAX_SIZE);
             message.type = FILE_NAME;
             msgCounter = 0;
-            message.sequence = 0;
-            cout << "sending: " << message.sequence << " " << message.data << endl;
+            message.sequence = msgCounter++;
             memcpy(buffer, &message, MAX_SIZE);
             send(socket, buffer, MAX_SIZE, 0);
-            msgCounter = 1;
 
             // loop until get all content (limit of 63 bytes each message)
             while (fileSize > 0) {
 
                 mount_package(&fileSize, fileName, &filePosition, fileContent, message, msgCounter);
+                msgCounter++;
 
                 memcpy(buffer, &message, MAX_SIZE);
                 send(socket, buffer, MAX_SIZE, 0); // send the file content
-                cout << "sending: " << message.sequence << " " << message.data << endl;
-                msgCounter++;
+
             }
 
             // send last message to inform that the whole file was sent
