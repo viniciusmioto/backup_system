@@ -35,12 +35,12 @@ int main() {
                     write_to_file(fileName, NULL, false);
 
                     cout << "\033[0;32mbackup: " << fileName << " started...\033[0m" << endl;
-
                 } else if (message.type != END_FILE && message.data != NULL) {
-                    cout << message.sequence << ": " << message.data << endl;
-                    write_to_file(fileName, message.data, true);
 
+                    write_to_file(fileName, message.data, true);
+                
                 } else {
+                
                     if (message.type == END_FILE)
                         msgCounter = -1;
                     cout << "\033[0;32mbackup: " << fileName << " complete.\033[0m" << endl;
@@ -48,7 +48,6 @@ int main() {
 
                 msgCounter++;
             }
-
         }
     }
 

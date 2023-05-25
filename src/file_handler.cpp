@@ -2,40 +2,19 @@
 
 using namespace std;
 
-string get_file_content(string fileName, unsigned int start_position, int fileSize) {
-    ifstream file(fileName);
+string get_file_content(string fileName, unsigned int startPosition, int fileSize) {
+    ifstream file(fileName, ios::binary); // Open the file in binary mode
 
-    if (!file) {
-        cout << "\033[0;31mFailed to open the file.\033[0m" << endl;
+    if (file.is_open()) {
+        file.seekg(startPosition); // Set the starting position
+        string content(MAX_DATA_SIZE, '\0');
+        file.read(&content[0], MAX_DATA_SIZE);
+        file.close(); // Close the file
+        return content;
+    } else {
+        cerr << "\033[0;31m Failed to open the file. \033[0m" << endl;
         return "";
     }
-
-    file.seekg(start_position);
-
-    // Read the file buffer into the stringstream
-    if (fileSize >= MAX_DATA_SIZE) {
-        char buffer[MAX_DATA_SIZE];
-        file.read(buffer, MAX_DATA_SIZE);
-        
-        cout << fileSize << ": " << buffer << endl;
-        
-        return buffer;
-    }  
-    if (fileSize == 1) {
-        char buffer_char;
-        file.get(buffer_char);
-
-        cout << fileSize << ": " << buffer_char << endl;
-
-        return string(1, buffer_char);
-    }
-
-    char buffer[fileSize];
-    file.read(buffer, fileSize);
-
-    cout << fileSize << ": " << buffer << endl;
-
-    return buffer; // Convert the stringstream to a string
 }
 
 unsigned int get_file_size(string fileName) {

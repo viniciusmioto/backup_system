@@ -18,7 +18,7 @@ typedef enum {
     OK = 13,
     ACK = 14,
     NACK = 15,
-} Messageype_t;
+} msg_type_t;
 
 typedef enum {
     SEND_FILE = 0,
