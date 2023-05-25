@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int msg_counter = 0;
+int msgCounter = 0;
 
 int main() {
     // network interface eno1 (two computers)
@@ -15,34 +15,34 @@ int main() {
     }
 
     Message message;
-    string file_name;
+    string fileName;
 
     while (1) {
         recv(socket, &message, MAX_SIZE, 0);      // receive the message from the client
-        if (message.init_marker == INIT_MARKER) { // check if the message is valid
+        if (message.initMarker == INIT_MARKER) { // check if the message is valid
 
-            if (message.sequence == msg_counter) { // check sequence
+            if (message.sequence == msgCounter) { // check sequence
 
                 if (message.type == FILE_NAME) {
                     // get file name and insert a 'b' in the beginning
-                    file_name = (char *)(message.data);
-                    file_name.insert(0, 1, 'b');
-                    write_to_file(file_name, NULL, false);
+                    fileName = (char *)(message.data);
+                    fileName.insert(0, 1, 'b');
+                    write_to_file(fileName, NULL, false);
 
-                    cout << "\033[0;32mbackup: " << file_name << " started...\033[0m" << endl;
+                    cout << "\033[0;32mbackup: " << fileName << " started...\033[0m" << endl;
 
                 } else if (message.type != END_FILE && message.data != NULL) {
-                    write_to_file(file_name, message.data, true);
+                    write_to_file(fileName, message.data, true);
 
                 } else {
-                    msg_counter = 0;
-                    cout << "\033[0;32mbackup: " << file_name << " complete.\033[0m" << endl;
+                    msgCounter = 0;
+                    cout << "\033[0;32mbackup: " << fileName << " complete.\033[0m" << endl;
                 }
 
-                msg_counter++;
+                msgCounter++;
             }
 
-            cout << "waiting for: " << msg_counter << endl;
+            cout << "waiting for: " << msgCounter << endl;
         }
     }
 

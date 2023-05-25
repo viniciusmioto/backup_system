@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int msg_counter = 0;
+int msgCounter = 0;
 
 int main() {
     // interface de rede eno1 (dois computadores)
@@ -16,12 +16,12 @@ int main() {
 
     unsigned char buffer[MAX_SIZE];
     Message message;
-    message.init_marker = 126;
+    message.initMarker = 126;
     int option;
-    int file_position = 0;
-    int file_size = 0;
-    string file_name;
-    string file_content;
+    int filePosition = 0;
+    int fileSize = 0;
+    string fileName;
+    string fileContent;
 
     while (option != 3) {
         cout << "\033[1;36mSELECT ONE OPTION" << endl;
@@ -33,20 +33,20 @@ int main() {
         switch (option) {
         case SEND_FILE:
             cout << "file name > ";
-            cin >> file_name;
+            cin >> fileName;
 
-            file_size = get_file_size(file_name);
+            fileSize = get_file_size(fileName);
 
             // send first message to inform the file name
-            memcpy(&message.data, file_name.c_str(), MAX_SIZE);
+            memcpy(&message.data, fileName.c_str(), MAX_SIZE);
             message.type = FILE_NAME;
             memcpy(buffer, &message, MAX_SIZE);
             send(socket, buffer, MAX_SIZE, 0);
-            message.sequence = msg_counter++;
+            message.sequence = msgCounter++;
 
             // loop until get all content (limit of 63 bytes each message)
-            while (file_size > 0) {
-                mount_package(&file_size, file_name, &file_position, file_content, message, &msg_counter);
+            while (fileSize > 0) {
+                mount_package(&fileSize, fileName, &filePosition, fileContent, message, &msgCounter);
 
                 memcpy(buffer, &message, MAX_SIZE);
                 send(socket, buffer, MAX_SIZE, 0); // send the file content
@@ -54,7 +54,7 @@ int main() {
 
             // send last message to inform that the whole file was sent
             memcpy(&message.data, "", MAX_SIZE);
-            message.sequence = msg_counter++;
+            message.sequence = msgCounter++;
             message.type = END_FILE;
             memcpy(buffer, &message, MAX_SIZE);
             send(socket, buffer, MAX_SIZE, 0);

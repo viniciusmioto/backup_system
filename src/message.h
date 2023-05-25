@@ -25,37 +25,26 @@ typedef enum {
     EXIT = 9,
 } client_options_t;
 
-// typedef struct message {
-//     unsigned int init_marker :8;
-//     unsigned int size :6;
-//     unsigned int sequence :6;
-//     unsigned int type: 4;
-//     unsigned char data[63];
-//     unsigned int parity :8;
-// } message_t;
-
 class Message {
 public:
-    unsigned int init_marker : 8;
+    unsigned int initMarker : 8;
     unsigned int size : 6;
     unsigned int sequence : 6;
     unsigned int type : 4;
     unsigned char data[63];
     unsigned int parity : 8;
-    
-    // Add constructor and member functions if needed
 };
 
 
 /*!
     * \brief Receives information of a message and mount a package to be sent
-    * \param file_size
-    * \param file_name
-    * \param file_position
-    * \param file_content
+    * \param fileSize
+    * \param fileName
+    * \param filePosition
+    * \param fileContent
     * \param message
-    * \param msg_counter
+    * \param msgCounter
 */
-void mount_package(int *file_size, string file_name, int *file_position, string file_content, Message &message, int *msg_counter);
+void mount_package(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int *msgCounter);
 
 #endif

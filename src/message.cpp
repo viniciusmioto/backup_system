@@ -2,16 +2,16 @@
 
 using namespace std;
 
-void mount_package(int *file_size, string file_name, int *file_position, string file_content, Message &message, int *msg_counter) {
-    if (*file_size > 0)
-        file_content = get_file_content(file_name, *file_position, *file_size);
+void mount_package(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int *msgCounter) {
+    if (*fileSize > 0)
+        fileContent = get_file_content(fileName, *filePosition, *fileSize);
 
-    memcpy(&message.data, file_content.c_str(), sizeof(message.data));
+    memcpy(&message.data, fileContent.c_str(), sizeof(message.data));
 
-    message.sequence = *msg_counter;
-    *msg_counter += 1;
+    message.sequence = *msgCounter;
+    *msgCounter += 1;
     message.type = BACKUP_1_ARQ;
 
-    *file_position += (MAX_DATA_SIZE);
-    *file_size -= (MAX_DATA_SIZE);
+    *filePosition += (MAX_DATA_SIZE);
+    *fileSize -= (MAX_DATA_SIZE);
 }

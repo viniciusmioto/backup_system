@@ -18,19 +18,19 @@ using namespace std;
 
 /*!
     * \brief Read a file and get its content limited by $MAX_DATA_SIZE bytes
-    * \param file_name
+    * \param fileName
     * \param start_position
-    * \param file_size
+    * \param fileSize
     * \return string with file content
 */
-string get_file_content(string file_name, unsigned int start_position, int file_size);
+string get_file_content(string fileName, unsigned int start_position, int fileSize);
 
 /*!
     * \brief Get the size of a file
-    * \param file_name
+    * \param fileName
     * \return unsigned int with file size
 */
-unsigned int get_file_size(string file_name);
+unsigned int get_file_size(string fileName);
 
 /*!
     * \brief Write data to a file

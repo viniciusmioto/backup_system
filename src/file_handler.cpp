@@ -2,8 +2,8 @@
 
 using namespace std;
 
-string get_file_content(string file_name, unsigned int start_position, int file_size) {
-    ifstream file(file_name);
+string get_file_content(string fileName, unsigned int start_position, int fileSize) {
+    ifstream file(fileName);
 
     if (!file) {
         cout << "\033[0;31mFailed to open the file.\033[0m" << endl;
@@ -13,25 +13,25 @@ string get_file_content(string file_name, unsigned int start_position, int file_
     file.seekg(start_position);
 
     // Read the file buffer into the stringstream
-    if (file_size >= 63) {
+    if (fileSize >= 63) {
         char buffer[MAX_DATA_SIZE];
         file.read(buffer, MAX_DATA_SIZE);
         return buffer;
     }  
-    if (file_size == 1) {
+    if (fileSize == 1) {
         char buffer_char;
         file.get(buffer_char);
         return string(1, buffer_char);
     }
 
-    char buffer[file_size];
-    file.read(buffer, file_size);
+    char buffer[fileSize];
+    file.read(buffer, fileSize);
 
     return buffer; // Convert the stringstream to a string
 }
 
-unsigned int get_file_size(string file_name) {
-    ifstream arq(file_name);
+unsigned int get_file_size(string fileName) {
+    ifstream arq(fileName);
 
     if (!arq) {
         cout << "\033[0;31mFailed to open the file.\033[0m" << endl;
