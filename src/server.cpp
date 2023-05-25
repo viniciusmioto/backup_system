@@ -14,7 +14,7 @@ int main() {
         exit(1);
     }
 
-    message_t message;
+    Message message;
     string file_name;
 
     while (1) {
@@ -27,6 +27,7 @@ int main() {
                     // get file name and insert a 'b' in the beginning
                     file_name = (char *)(message.data);
                     file_name.insert(0, 1, 'b');
+                    write_to_file(file_name, NULL, false);
 
                     cout << "\033[0;32mbackup: " << file_name << " started...\033[0m" << endl;
 
@@ -40,6 +41,8 @@ int main() {
 
                 msg_counter++;
             }
+
+            cout << "waiting for: " << msg_counter << endl;
         }
     }
 

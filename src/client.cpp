@@ -15,7 +15,7 @@ int main() {
     }
 
     unsigned char buffer[MAX_SIZE];
-    message_t message;
+    Message message;
     message.init_marker = 126;
     int option;
     int file_position = 0;
