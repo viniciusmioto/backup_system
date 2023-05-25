@@ -18,7 +18,11 @@ int main() {
     string fileName;
 
     while (1) {
-        recv(socket, &message, MAX_SIZE, 0);      // receive the message from the client
+
+        if (msgCounter >= 63)
+            msgCounter = 0;
+
+        recv(socket, &message, MAX_SIZE, 0);     // receive the message from the client
         if (message.initMarker == INIT_MARKER) { // check if the message is valid
 
             if (message.sequence == msgCounter) { // check sequence
@@ -35,7 +39,8 @@ int main() {
                     write_to_file(fileName, message.data, true);
 
                 } else {
-                    msgCounter = 0;
+                    if (message.type == END_FILE)
+                        msgCounter = -1;
                     cout << "\033[0;32mbackup: " << fileName << " complete.\033[0m" << endl;
                 }
 

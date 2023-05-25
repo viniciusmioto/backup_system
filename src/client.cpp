@@ -23,6 +23,9 @@ int main() {
     string fileContent;
 
     while (option != 3) {
+        if (msgCounter >= 63)
+            msgCounter = 0;
+
         cout << "\033[1;36mSELECT ONE OPTION" << endl;
         cout << "0 - Send a File" << endl;
         cout << "9 - Quit" << endl;
@@ -39,24 +42,32 @@ int main() {
             // send first message to inform the file name
             memcpy(&message.data, fileName.c_str(), MAX_SIZE);
             message.type = FILE_NAME;
+            msgCounter = 0;
+            message.sequence = 0;
+            cout << "sending: " << msgCounter << endl;
             memcpy(buffer, &message, MAX_SIZE);
             send(socket, buffer, MAX_SIZE, 0);
-            message.sequence = msgCounter++;
+            msgCounter = 1;
 
             // loop until get all content (limit of 63 bytes each message)
             while (fileSize > 0) {
+                if (msgCounter >= 63)
+                    msgCounter = 0;
+
                 mount_package(&fileSize, fileName, &filePosition, fileContent, message, &msgCounter);
 
                 memcpy(buffer, &message, MAX_SIZE);
                 send(socket, buffer, MAX_SIZE, 0); // send the file content
+                cout << "sending: " << msgCounter << endl;
             }
 
             // send last message to inform that the whole file was sent
             memcpy(&message.data, "", MAX_SIZE);
-            message.sequence = msgCounter++;
+            message.sequence = msgCounter;
             message.type = END_FILE;
             memcpy(buffer, &message, MAX_SIZE);
             send(socket, buffer, MAX_SIZE, 0);
+            msgCounter = 0;
 
             break;
 
