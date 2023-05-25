@@ -33,18 +33,20 @@ public:
     unsigned int type : 4;
     unsigned char data[63];
     unsigned int parity : 8;
+
+    Message();
+    Message(unsigned int sizeValue, unsigned int sequenceValue, unsigned int typeValue, const unsigned char *dataValue, unsigned int parityValue);
 };
 
-
 /*!
-    * \brief Receives information of a message and mount a package to be sent
-    * \param fileSize
-    * \param fileName
-    * \param filePosition
-    * \param fileContent
-    * \param message
-    * \param msgCounter
-*/
+ * \brief Receives information of a message and mount a package to be sent
+ * \param fileSize
+ * \param fileName
+ * \param filePosition
+ * \param fileContent
+ * \param message
+ * \param msgCounter
+ */
 void mount_package(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int *msgCounter);
 
 #endif

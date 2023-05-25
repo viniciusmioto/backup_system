@@ -1,4 +1,4 @@
-#include "message.h"
+#include "Message.h"
 
 using namespace std;
 
@@ -16,7 +16,6 @@ int main() {
 
     unsigned char buffer[MAX_SIZE];
     Message message;
-    message.initMarker = 126;
     int option;
     int filePosition = 0;
     int fileSize = 0;

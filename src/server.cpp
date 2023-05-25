@@ -1,4 +1,4 @@
-#include "message.h"
+#include "Message.h"
 
 using namespace std;
 
