@@ -19,7 +19,6 @@ int main() {
     while (option != 9) {
 
         unsigned char buffer[MAX_SIZE] = {0};
-        Message message;
         int filePosition = 0;
         int fileSize = 0;
         string fileName;
@@ -35,38 +34,34 @@ int main() {
         cin >> option;
 
         switch (option) {
-        case SEND_FILE:
+        case SEND_FILE: {
             cout << "file name > ";
             cin >> fileName;
 
             fileSize = get_file_size(fileName);
 
             // send first message to inform the file name
-            memcpy(&message.data, fileName.c_str(), MAX_SIZE);
-            message.type = FILE_NAME;
-            msgCounter = 0;
-            message.sequence = msgCounter++;
-            sendMessage(socket, message);
-
+            Message fileNameMsg(sizeof(fileName), msgCounter, FILE_NAME, (unsigned char *)fileName.c_str(), 0);
+            sendMessage(socket, fileNameMsg);
+            msgCounter++;
 
             // loop until get all content (limit of MAX_DATA_SIZE bytes each message)
             while (fileSize > 0) {
-                mountPackage(&fileSize, fileName, &filePosition, fileContent, message, msgCounter);
+                Message packageMsg;
 
-                sendMessage(socket, message); // send the file content
+                mountPackage(&fileSize, fileName, &filePosition, fileContent, packageMsg, msgCounter);
+                sendMessage(socket, packageMsg); // send the file content
 
                 msgCounter++;
             }
 
             // send last message to inform that the whole file was sent
-            memcpy(&message.data, "", MAX_SIZE);
-            message.sequence = msgCounter;
-            message.type = END_FILE;
-            sendMessage(socket, message);
+            Message endFileMsg(sizeof(""), msgCounter, END_FILE, (unsigned char *)"", 0);
+            sendMessage(socket, endFileMsg);
             msgCounter = 0;
 
             break;
-
+        }
         case EXIT:
             exit(0);
             break;

@@ -49,6 +49,12 @@ public:
  */
 void mountPackage(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int msgCounter);
 
+/*!
+ * \brief Sends a message to the socket
+ * \param socket
+ * \param message
+ * \return 0 if success, -1 if error
+ */
 int sendMessage(int socket, Message message);
 
 #endif
