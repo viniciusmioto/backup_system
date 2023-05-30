@@ -62,8 +62,8 @@ int sendMessage(int socket, Message message);
 
 long long getCurrentTime();
 
-int waitForACK(int socket);
+int waitForACK(int socket, int msgCounter);
 
-void verifySend(int socket, Message message);
+void verifySend(int socket, Message message, int msgCounter);
 
 #endif

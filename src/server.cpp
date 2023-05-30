@@ -28,7 +28,7 @@ int main() {
 
             if (recvMessage.sequence == msgCounter) { // check sequence
 
-                Message ackMessage(sizeof(""), msgCounter, ACK, (unsigned char *)"", 0);
+                Message ackMessage(sizeof(recvMessage.data), msgCounter, ACK, recvMessage.data, 0);
                 sendMessage(socket, ackMessage); // send ack
 
                 if (recvMessage.type == FILE_NAME) {

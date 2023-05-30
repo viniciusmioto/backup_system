@@ -43,8 +43,8 @@ int main() {
             // send first message to inform the file name
             Message fileNameMsg(sizeof(fileName), msgCounter, FILE_NAME, (unsigned char *)fileName.c_str(), 0);
             sendMessage(socket, fileNameMsg);
+            verifySend(socket, fileNameMsg, msgCounter);
             msgCounter++;
-            verifySend(socket, fileNameMsg);
 
 
             // loop until get all content (limit of MAX_DATA_SIZE bytes each message)
@@ -53,15 +53,15 @@ int main() {
 
                 mountPackage(&fileSize, fileName, &filePosition, fileContent, packageMsg, msgCounter);
                 sendMessage(socket, packageMsg); // send the file content
+                verifySend(socket, packageMsg, msgCounter);
                 msgCounter++;
-                verifySend(socket, packageMsg);
             }
 
             // send last message to inform that the whole file was sent
             Message endFileMsg(sizeof(""), msgCounter, END_FILE, (unsigned char *)"", 0);
             sendMessage(socket, endFileMsg);
+            verifySend(socket, endFileMsg, msgCounter);
             msgCounter = 0;
-            verifySend(socket, endFileMsg);
 
             break;
         }
