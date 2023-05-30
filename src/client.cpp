@@ -1,4 +1,4 @@
-#include "Message.h"
+#include "Message.hpp"
 
 using namespace std;
 
@@ -18,7 +18,7 @@ int main() {
 
     while (option != 9) {
 
-        unsigned char buffer[MAX_SIZE];
+        unsigned char buffer[MAX_SIZE] = {0};
         Message message;
         int filePosition = 0;
         int fileSize = 0;
@@ -46,17 +46,14 @@ int main() {
             message.type = FILE_NAME;
             msgCounter = 0;
             message.sequence = msgCounter++;
-            memcpy(buffer, &message, MAX_SIZE);
-            send(socket, buffer, MAX_SIZE, 0);
+            sendMessage(socket, message);
+
 
             // loop until get all content (limit of MAX_DATA_SIZE bytes each message)
             while (fileSize > 0) {
+                mountPackage(&fileSize, fileName, &filePosition, fileContent, message, msgCounter);
 
-                mount_package(&fileSize, fileName, &filePosition, fileContent, message, msgCounter);
-
-                memcpy(buffer, &message, MAX_SIZE);
-                // cout << message.sequence << ": " << message.data << endl;
-                send(socket, buffer, MAX_SIZE, 0); // send the file content
+                sendMessage(socket, message); // send the file content
 
                 msgCounter++;
             }
@@ -65,8 +62,7 @@ int main() {
             memcpy(&message.data, "", MAX_SIZE);
             message.sequence = msgCounter;
             message.type = END_FILE;
-            memcpy(buffer, &message, MAX_SIZE);
-            send(socket, buffer, MAX_SIZE, 0);
+            sendMessage(socket, message);
             msgCounter = 0;
 
             break;

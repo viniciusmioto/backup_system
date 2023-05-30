@@ -1,4 +1,4 @@
-#include "Message.h"
+#include "Message.hpp"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ Message::Message(unsigned int sizeValue, unsigned int sequenceValue,
     parity = parityValue;
 }
 
-void mount_package(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int msgCounter) {
+void mountPackage(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int msgCounter) {
     if (*fileSize > 0)
         fileContent = get_file_content(fileName, *filePosition, *fileSize);
 
@@ -33,4 +33,10 @@ void mount_package(int *fileSize, string fileName, int *filePosition, string fil
 
     *filePosition += (MAX_DATA_SIZE);
     *fileSize -= (MAX_DATA_SIZE);
+}
+
+int sendMessage(int socket, Message message) {
+    unsigned char buffer[MAX_SIZE] = {0};
+    memcpy(buffer, &message, MAX_SIZE);
+    return send(socket, buffer, MAX_SIZE, 0);
 }

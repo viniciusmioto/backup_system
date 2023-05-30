@@ -1,4 +1,4 @@
-#include "ConexaoRawSocket.h"
+#include "ConexaoRawSocket.hpp"
 
 int ConexaoRawSocket(const char *device)
 {

@@ -9,7 +9,7 @@
 #include <string>
 #include <cstring>
 
-#include "ConexaoRawSocket.h"
+#include "ConexaoRawSocket.hpp"
 
 
 #define MAX_DATA_SIZE 63

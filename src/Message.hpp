@@ -1,7 +1,7 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
-#include "file_handler.h"
+#include "FileHandler.hpp"
 
 #define MAX_SIZE 67
 #define MAX_DATA_SIZE 63
@@ -47,6 +47,8 @@ public:
  * \param message
  * \param msgCounter
  */
-void mount_package(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int msgCounter);
+void mountPackage(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int msgCounter);
+
+int sendMessage(int socket, Message message);
 
 #endif
