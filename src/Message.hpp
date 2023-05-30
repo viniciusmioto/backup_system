@@ -2,10 +2,13 @@
 #define MESSAGE_H
 
 #include "FileHandler.hpp"
+#include <sys/time.h>
 
 #define MAX_SIZE 67
 #define MAX_DATA_SIZE 63
 #define INIT_MARKER 126
+#define TIMEOUT 500
+#define MAX_ATTEMPTS 5
 
 using namespace std;
 
@@ -56,5 +59,11 @@ void mountPackage(int *fileSize, string fileName, int *filePosition, string file
  * \return 0 if success, -1 if error
  */
 int sendMessage(int socket, Message message);
+
+long long getCurrentTime();
+
+int waitForACK(int socket);
+
+void verifySend(int socket, Message message);
 
 #endif

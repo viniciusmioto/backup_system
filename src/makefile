@@ -1,4 +1,5 @@
 CC = g++
+DEBUG = -DDEBUG -g
 OBJECTS = ConexaoRawSocket.o FileHandler.o Message.o 
 
 all: client server

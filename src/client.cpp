@@ -10,7 +10,7 @@ int main() {
     int socket = ConexaoRawSocket(interface);
 
     if (socket < 0) {
-        perror("\033[0;31m ### ERRO: Falha ao criar conexão raw socket. \033[0m\n");
+        perror("\033[0;31m ### ERROR: Could not connect to socket. \033[0m\n");
         exit(1);
     }
 
@@ -35,7 +35,7 @@ int main() {
 
         switch (option) {
         case SEND_FILE: {
-            cout << "file name > ";
+            cout << "\033[1;36mfile name > \033[0m";
             cin >> fileName;
 
             fileSize = get_file_size(fileName);
@@ -44,6 +44,8 @@ int main() {
             Message fileNameMsg(sizeof(fileName), msgCounter, FILE_NAME, (unsigned char *)fileName.c_str(), 0);
             sendMessage(socket, fileNameMsg);
             msgCounter++;
+            verifySend(socket, fileNameMsg);
+
 
             // loop until get all content (limit of MAX_DATA_SIZE bytes each message)
             while (fileSize > 0) {
@@ -51,14 +53,15 @@ int main() {
 
                 mountPackage(&fileSize, fileName, &filePosition, fileContent, packageMsg, msgCounter);
                 sendMessage(socket, packageMsg); // send the file content
-
                 msgCounter++;
+                verifySend(socket, packageMsg);
             }
 
             // send last message to inform that the whole file was sent
             Message endFileMsg(sizeof(""), msgCounter, END_FILE, (unsigned char *)"", 0);
             sendMessage(socket, endFileMsg);
             msgCounter = 0;
+            verifySend(socket, endFileMsg);
 
             break;
         }

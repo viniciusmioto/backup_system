@@ -10,11 +10,11 @@ int main() {
     int socket = ConexaoRawSocket(sock);
 
     if (socket < 0) {
-        perror("\033[0;31m ### ERRO: Could not connect to socket. \033[0m\n");
+        perror("\033[0;31m ### ERROR: Could not connect to socket. \033[0m\n");
         exit(1);
     }
 
-    Message message;
+    Message recvMessage;
     string fileName;
 
     while (1) {
@@ -22,26 +22,29 @@ int main() {
         if (msgCounter >= MAX_DATA_SIZE)
             msgCounter = 0;
 
-        recv(socket, &message, MAX_SIZE, 0); // receive the message from the client
+        recv(socket, &recvMessage, MAX_SIZE, 0); // receive the recvMessage from the client
 
-        if (message.initMarker == INIT_MARKER) { // check if the message is valid
+        if (recvMessage.initMarker == INIT_MARKER) { // check if the recvMessage is valid
 
-            if (message.sequence == msgCounter) { // check sequence
+            if (recvMessage.sequence == msgCounter) { // check sequence
 
-                if (message.type == FILE_NAME) {
+                Message ackMessage(sizeof(""), msgCounter, ACK, (unsigned char *)"", 0);
+                sendMessage(socket, ackMessage); // send ack
+
+                if (recvMessage.type == FILE_NAME) {
                     // get file name and insert a 'b' in the beginning
-                    fileName = (char *)(message.data);
+                    fileName = (char *)(recvMessage.data);
                     fileName.insert(0, 1, 'b');
                     write_to_file(fileName, NULL, false);
 
                     cout << "\033[0;32mbackup: " << fileName << " started...\033[0m" << endl;
-                } else if (message.type != END_FILE && message.data != NULL) {
+                } else if (recvMessage.type != END_FILE && recvMessage.data != NULL) {
 
-                    write_to_file(fileName, message.data, true);
+                    write_to_file(fileName, recvMessage.data, true);
                 
                 } else {
                 
-                    if (message.type == END_FILE)
+                    if (recvMessage.type == END_FILE)
                         msgCounter = -1;
                     cout << "\033[0;32mbackup: " << fileName << " complete.\033[0m" << endl;
                 }

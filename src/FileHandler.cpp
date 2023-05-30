@@ -12,7 +12,7 @@ string get_file_content(string fileName, unsigned int startPosition, int fileSiz
         file.close(); // Close the file
         return content;
     } else {
-        cerr << "\033[0;31m Failed to open the file. \033[0m" << endl;
+        cerr << "\033[0;31m ### ERROR: Failed to open the file. \033[0m" << endl;
         return "";
     }
 }
@@ -21,7 +21,7 @@ unsigned int get_file_size(string fileName) {
     ifstream arq(fileName);
 
     if (!arq) {
-        cout << "\033[0;31mFailed to open the file.\033[0m" << endl;
+        cout << "\033[0;31m ### ERROR: Failed to open the file.\033[0m" << endl;
         return 0;
     }
 
@@ -45,6 +45,6 @@ void write_to_file(string filename, unsigned char data[MAX_DATA_SIZE], bool appe
         file.close();
 
     } else {
-        cout << "\033[0;31mError opening the file.\033[0m" << endl;
+        cout << "\033[0;31m ### ERROR: Could not write file.\033[0m" << endl;
     }
 }
