@@ -22,14 +22,15 @@ Message::Message(unsigned int sizeValue, unsigned int sequenceValue,
     parity = parityValue;
 }
 
-void mountPackage(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int msgCounter) {
+void mountPackage(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int msgCounter, int *bytesRead) {
     if (*fileSize > 0)
-        fileContent = get_file_content(fileName, *filePosition, *fileSize);
+        fileContent = get_file_content(fileName, *filePosition, *fileSize, bytesRead);
 
     memcpy(&message.data, fileContent.c_str(), sizeof(message.data));
 
     message.sequence = msgCounter;
     message.type = BACKUP_1_ARQ;
+    message.size = *bytesRead;
 
     *filePosition += (MAX_DATA_SIZE);
     *fileSize -= (MAX_DATA_SIZE);

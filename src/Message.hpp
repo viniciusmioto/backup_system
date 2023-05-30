@@ -50,7 +50,7 @@ public:
  * \param message
  * \param msgCounter
  */
-void mountPackage(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int msgCounter);
+void mountPackage(int *fileSize, string fileName, int *filePosition, string fileContent, Message &message, int msgCounter, int *bytesRead);
 
 /*!
  * \brief Sends a message to the socket

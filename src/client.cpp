@@ -21,6 +21,7 @@ int main() {
         unsigned char buffer[MAX_SIZE] = {0};
         int filePosition = 0;
         int fileSize = 0;
+        int bytesRead = 0;
         string fileName;
         string fileContent;
 
@@ -51,7 +52,7 @@ int main() {
 
                 Message packageMsg;
 
-                mountPackage(&fileSize, fileName, &filePosition, fileContent, packageMsg, msgCounter);
+                mountPackage(&fileSize, fileName, &filePosition, fileContent, packageMsg, msgCounter, &bytesRead);
                 sendMessage(socket, packageMsg); // send the file content
                 verifySend(socket, packageMsg, msgCounter);
                 msgCounter++;

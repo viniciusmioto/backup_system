@@ -23,7 +23,7 @@ using namespace std;
     * \param fileSize
     * \return string with file content
 */
-string get_file_content(string fileName, unsigned int start_position, int fileSize);
+string get_file_content(string fileName, unsigned int start_position, int fileSize, int* bytesRead);
 
 /*!
     * \brief Get the size of a file
@@ -38,6 +38,6 @@ unsigned int get_file_size(string fileName);
     * \param data
     * \param append
 */
-void write_to_file(string filename, unsigned char data[MAX_DATA_SIZE], bool append);
+void write_to_file(string filename, unsigned char data[MAX_DATA_SIZE], bool append, size_t dataSize);
 
 #endif
