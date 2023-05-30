@@ -19,13 +19,14 @@ int main() {
 
     while (1) {
 
-        if (msgCounter >= MAX_DATA_SIZE)
+        if (msgCounter > MAX_DATA_SIZE)
             msgCounter = 0;
 
         recv(socket, &recvMessage, MAX_SIZE, 0); // receive the recvMessage from the client
 
         if (recvMessage.initMarker == INIT_MARKER) { // check if the recvMessage is valid
 
+            cout <<"\033[33;0mwaiting for message: " << msgCounter  << endl;
             if (recvMessage.sequence == msgCounter) { // check sequence
 
                 Message ackMessage(sizeof(recvMessage.data), msgCounter, ACK, recvMessage.data, 0);

@@ -24,8 +24,7 @@ int main() {
         string fileName;
         string fileContent;
 
-        if (msgCounter >= MAX_DATA_SIZE)
-            msgCounter = 0;
+        adjustMsgCounter(&msgCounter);
 
         cout << "\033[1;36mSELECT ONE OPTION" << endl;
         cout << "0 - Send a File" << endl;
@@ -40,15 +39,16 @@ int main() {
 
             fileSize = get_file_size(fileName);
 
-            // send first message to inform the file name
+            // send first message to inform the file name - msgCounter = 0
             Message fileNameMsg(sizeof(fileName), msgCounter, FILE_NAME, (unsigned char *)fileName.c_str(), 0);
             sendMessage(socket, fileNameMsg);
             verifySend(socket, fileNameMsg, msgCounter);
             msgCounter++;
 
-
             // loop until get all content (limit of MAX_DATA_SIZE bytes each message)
             while (fileSize > 0) {
+                adjustMsgCounter(&msgCounter);
+
                 Message packageMsg;
 
                 mountPackage(&fileSize, fileName, &filePosition, fileContent, packageMsg, msgCounter);
@@ -56,6 +56,8 @@ int main() {
                 verifySend(socket, packageMsg, msgCounter);
                 msgCounter++;
             }
+
+            adjustMsgCounter(&msgCounter);
 
             // send last message to inform that the whole file was sent
             Message endFileMsg(sizeof(""), msgCounter, END_FILE, (unsigned char *)"", 0);

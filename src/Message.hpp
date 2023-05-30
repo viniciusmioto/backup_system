@@ -8,7 +8,7 @@
 #define MAX_DATA_SIZE 63
 #define INIT_MARKER 126
 #define TIMEOUT 500
-#define MAX_ATTEMPTS 5
+#define MAX_ATTEMPTS 8
 
 using namespace std;
 
@@ -65,5 +65,7 @@ long long getCurrentTime();
 int waitForACK(int socket, int msgCounter);
 
 void verifySend(int socket, Message message, int msgCounter);
+
+void adjustMsgCounter(int *msgCounter);
 
 #endif

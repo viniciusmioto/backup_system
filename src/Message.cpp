@@ -39,7 +39,7 @@ int sendMessage(int socket, Message message) {
 
     unsigned char buffer[MAX_SIZE] = {0};
     memcpy(buffer, &message, MAX_SIZE);
-    cout << "\033[0;32m Send [" << message.sequence << "] \033[0m" << message.data << endl;
+    cout << "\033[0;32m >> Send [" << message.sequence << "] \033[0m" << message.data << endl;
     return send(socket, buffer, MAX_SIZE, 0);
 }
 
@@ -58,8 +58,9 @@ int waitForACK(int socket, int msgCounter) {
 
     do {
         recv(socket, &recvMessage, MAX_DATA_SIZE, 0);
+        cout << "\033[0;33m Waiting for ACK " << msgCounter << "\033[0m" << endl;
         if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == ACK && recvMessage.sequence == msgCounter) {
-            cout << "\033[0;34m Recived ACK [" << recvMessage.sequence << "] \033[0m" << recvMessage.data << endl;
+            cout << "\033[0;34m << Recived ACK [" << recvMessage.sequence << "] \033[0m" << recvMessage.data << endl;
             return ACK;
         }
     } while (getCurrentTime() - start <= TIMEOUT);
@@ -72,7 +73,7 @@ int waitForACK(int socket, int msgCounter) {
 void verifySend(int socket, Message message, int msgCounter) {
     int attempts = 0;
     while (waitForACK(socket, msgCounter) != ACK) {
-        cout << "\033[0;33m -> Trying to send again... \033[0m" << endl;
+        cout << "\033[0;33m -> Trying to send again..." << attempts << "\033[0m" << endl;
         sendMessage(socket, message);
         attempts++;
         if (attempts >= 5) {
@@ -80,4 +81,9 @@ void verifySend(int socket, Message message, int msgCounter) {
             exit(1);
         }
     }
+}
+
+void adjustMsgCounter(int *msgCounter) {
+    if (*msgCounter > MAX_DATA_SIZE)
+        *msgCounter = 0;
 }
