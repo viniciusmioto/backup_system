@@ -42,7 +42,9 @@ void write_to_file(string filename, unsigned char data[MAX_DATA_SIZE], bool appe
     }
 
     if (file.is_open()) {
-        cout << dataSize << endl;
+#ifdef DEBUG
+        cout << "message size: " << dataSize << endl;
+#endif
         file.write((const char *)(data), dataSize);
 
         file.close();

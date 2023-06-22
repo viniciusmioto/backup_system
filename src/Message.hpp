@@ -8,7 +8,7 @@
 #define MAX_DATA_SIZE 63
 #define INIT_MARKER 126
 #define TIMEOUT 500
-#define MAX_ATTEMPTS 8
+#define MAX_ATTEMPTS 20
 
 using namespace std;
 
@@ -60,12 +60,53 @@ void mountPackage(int *fileSize, string fileName, int *filePosition, string file
  */
 int sendMessage(int socket, Message message);
 
+/*!
+ * \brief Gets the current time in milliseconds
+ * \return current time in milliseconds
+ */
 long long getCurrentTime();
 
+/*!
+ * \brief Waits for a ACK message for each message sent (TIMEOUT)
+ * \param socket
+ * \param msgCounter: message sequence number
+ * \return 0 if success, -1 if error
+ */
 int waitForACK(int socket, int msgCounter);
 
+/*!
+ * \brief Verifies if the message was sent successfully
+ * \param socket
+ * \param message
+ * \param msgCounter
+ */
 void verifySend(int socket, Message message, int msgCounter);
 
+/*!
+ * \brief Adjusts the message counter, max value is 63
+ * \param msgCounter
+ */
 void adjustMsgCounter(int *msgCounter);
+
+/*!
+ * \brief Checks if the message is valid (parity)
+ * \param message
+ * \return true if valid, false if invalid
+ */
+bool checkVerticalParity(Message message);
+
+/*!
+ * \brief Sends a ACK message
+ * \param socket
+ * \param msgCounter
+ */
+void sendACK(int socket, int msgCounter);
+
+/*!
+ * \brief Sends a NACK message
+ * \param socket
+ * \param msgCounter
+ */
+void sendNACK(int socket, int msgCounter);
 
 #endif
