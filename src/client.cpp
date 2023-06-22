@@ -10,7 +10,7 @@ int main() {
     int socket = ConexaoRawSocket(interface);
 
     if (socket < 0) {
-        perror("\033[0;31m ### ERROR: Could not connect to socket. \033[0m\n");
+        perror("\033[0;35m ### ERROR: Could not connect to socket. \033[0m\n");
         exit(1);
     }
 

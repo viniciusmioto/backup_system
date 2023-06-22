@@ -46,7 +46,8 @@ int sendMessage(int socket, Message message) {
     memcpy(buffer, &message, MAX_SIZE);
 
 #ifdef DEBUG
-    cout << "\033[0;32m >> Send [" << message.sequence << "] \033[0m" << message.data << endl;
+    if (message.type != ACK && message.type != NACK)
+        cout << "\033[0;32m >> Send [" << message.sequence << "] \033[0m" << message.data << endl;
 #endif
 
     return send(socket, buffer, MAX_SIZE, 0);
@@ -75,11 +76,17 @@ int waitForACK(int socket, int msgCounter) {
             cout << "\033[0;34m << Recived ACK [" << recvMessage.sequence << "] \033[0m" << recvMessage.data << endl;
 #endif
             return ACK;
+        } else if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == NACK && recvMessage.sequence == msgCounter) {
+#ifdef DEBUG
+            cout << "\033[0;34m << Recived NACK [" << recvMessage.sequence << "] \033[0m" << recvMessage.data << endl;
+#endif
+            return NACK;
         }
+
     } while (getCurrentTime() - start <= TIMEOUT);
 
 #ifdef DEBUG
-    cout << "\033[0;31m ### ERROR: Lost Message (Timeout) \033[0m" << endl;
+    cout << "\033[0;35m ### ERROR: Lost Message (Timeout) \033[0m" << endl;
 #endif
 
     return -1;
@@ -95,7 +102,7 @@ void verifySend(int socket, Message message, int msgCounter) {
         attempts++;
         if (attempts >= MAX_ATTEMPTS) {
 #ifdef DEBUG
-            cout << "\033[0;31m ### ERROR: Could not send file name. \033[0m" << endl;
+            cout << "\033[0;35m ### ERROR: Could not send file name. \033[0m" << endl;
 #endif
             exit(1);
         }
@@ -121,7 +128,7 @@ void sendACK(int socket, int msgCounter) {
     message.sequence = msgCounter;
 
 #ifdef DEBUG
-    cout << "\033[0;34m << Send ACK [" << message.sequence << "] \033[0m" << endl;
+    cout << "\033[0;34m >> Send ACK [" << message.sequence << "] \033[0m" << endl;
 #endif
 
     sendMessage(socket, message);
@@ -133,7 +140,7 @@ void sendNACK(int socket, int msgCounter) {
     message.sequence = msgCounter;
 
 #ifdef DEBUG
-    cout << "\033[0;34m << Send NACK [" << message.sequence << "] \033[0m" << endl;
+    cout << "\033[0;35m >> Send NACK [" << message.sequence << "] \033[0m" << endl;
 #endif
 
     sendMessage(socket, message);
