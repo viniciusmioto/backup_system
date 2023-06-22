@@ -14,15 +14,14 @@ int main() {
     char sock[] = "lo";
     int socket = ConexaoRawSocket(sock);
     unsigned int parity = 0;
-    int nackCounter = 0;
+    string fileName;
+    Message recvMessage;
 
     if (socket < 0) {
         perror("\033[0;35m ### ERROR: Could not connect to socket. \033[0m\n");
         exit(1);
     }
 
-    Message recvMessage;
-    string fileName;
 
     while (1) {
         if (msgCounter > MAX_DATA_SIZE)
@@ -32,14 +31,14 @@ int main() {
 
         if (recvMessage.initMarker == INIT_MARKER) { // check if the recvMessage is valid
 #ifdef DEBUG
-            cout << "\033[33;0mwaiting for message: " << msgCounter << endl;
+            cout << "\033[0;33m waiting for message: " << msgCounter << "\033[0m" << endl;
 #endif
             if (recvMessage.sequence == msgCounter) { // check sequence
 
                 if (recvMessage.type == FILE_NAME) {
                     sendACK(socket, msgCounter);
 
-                    // get file name and insert a 'b' in the beginning
+                    // get original file name 
                     fileName = (char *)(recvMessage.data);
 
                     // if is in loopback interface, insert a 'b' in the beginning
@@ -48,7 +47,7 @@ int main() {
 
                     write_to_file(fileName, NULL, false, 0);
 
-                    cout << "\033[0;32mbackup: " << fileName << " started...\033[0m" << endl;
+                    cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
                 } else if (recvMessage.type != END_FILE && recvMessage.data != NULL) {
                     size_t size = recvMessage.size;
 
@@ -58,14 +57,14 @@ int main() {
                     } else {
                         write_to_file(fileName, recvMessage.data, true, size);
                         sendNACK(socket, msgCounter);
-                        nackCounter++;
+                        msgCounter--; // prevent msgCounter from incrementing
                     }
 
                 } else {
                     sendACK(socket, msgCounter);
                     if (recvMessage.type == END_FILE)
                         msgCounter = -1;
-                    cout << "\033[0;32mbackup: " << fileName << " complete.\033[0m" << endl;
+                    cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
                 }
 
                 msgCounter++;

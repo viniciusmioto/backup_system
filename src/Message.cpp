@@ -78,7 +78,7 @@ int waitForACK(int socket, int msgCounter) {
             return ACK;
         } else if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == NACK && recvMessage.sequence == msgCounter) {
 #ifdef DEBUG
-            cout << "\033[0;34m << Recived NACK [" << recvMessage.sequence << "] \033[0m" << recvMessage.data << endl;
+            cout << "\033[0;35m << Recived NACK [" << recvMessage.sequence << "] \033[0m" << recvMessage.data << endl;
 #endif
             return NACK;
         }
