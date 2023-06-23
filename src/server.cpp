@@ -1,4 +1,4 @@
-#include "Controller.hpp"
+#include "Communication.hpp"
 
 using namespace std;
 

@@ -37,6 +37,7 @@ unsigned int get_file_size(string fileName);
     * \param filename
     * \param data: char array with data to be written
     * \param append: if true, append data to the end of the file; otherwise, overwrite the file
+    * \param dataSize: size of the data to be written
 */
 void write_to_file(string filename, unsigned char data[MAX_DATA_SIZE], bool append, size_t dataSize);
 
