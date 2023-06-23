@@ -35,17 +35,18 @@ unsigned int get_file_size(string fileName) {
 void write_to_file(string filename, unsigned char data[MAX_DATA_SIZE], bool append, size_t dataSize) {
     ofstream file;
 
+    // check if the data will be appended
     if (append) {
         file.open(filename, ios::binary | ios::app);
-    } else {
+    } else { // otherwise, overwrite the file
         file.open(filename, ios::binary);
     }
 
     if (file.is_open()) {
 
         file.write((const char *)(data), dataSize);
-
         file.close();
+        
     } else {
         cout << "\033[0;35m ### ERROR: Could not write file.\033[0m" << endl;
     }
