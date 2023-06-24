@@ -23,12 +23,8 @@ void sendFileData(int socket, string fileName, int &msgCounter) {
     }
 }
 
-void sendOneFile(int socket) {
+void sendOneFile(int socket, string fileName) {
     int msgCounter = 0;
-    string fileName;
-
-    cout << "\033[1;36mfile name > \033[0m";
-    cin >> fileName;
 
     // send first message to inform the file name - msgCounter = 0
     Message fileNameMsg(sizeof(fileName), msgCounter, FILE_NAME, (unsigned char *)fileName.c_str(), 0);
@@ -47,7 +43,7 @@ void sendOneFile(int socket) {
     msgCounter = 0;
 }
 
-vector<string> getGlobResults(const string& pattern) {
+vector<string> getGlobResults(string pattern) {
     vector<string> results;
 
     glob_t globResult;
@@ -66,16 +62,10 @@ vector<string> getGlobResults(const string& pattern) {
     return results;
 }
 
-void getGroupOfFiles() {
-    string patterns;
-    cout << "\033[1;36mpatterns > \033[0m";
+vector<string> getGroupOfFiles(string filePatterns) {
+    vector<string> matched_files;
 
-    // Read the user input patterns from the console
-    getline(cin >> ws, patterns);
-
-    vector<string> results;
-
-    istringstream iss(patterns);
+    istringstream iss(filePatterns);
     string pattern;
 
     // Process each pattern individually
@@ -83,17 +73,21 @@ void getGroupOfFiles() {
         // Call the getGlobResults function to get the matching file paths for each pattern
         vector<string> patternResults = getGlobResults(pattern);
 
-        // Append the pattern results to the overall results vector
-        results.insert(results.end(), patternResults.begin(), patternResults.end());
+        // Append the pattern matched_files to the overall matched_files vector
+        matched_files.insert(matched_files.end(), patternResults.begin(), patternResults.end());
     }
 
-    if (results.empty()) {
-        // If no files match the patterns, display a message
-        cout << "No files matching the patterns found." << endl;
+    return matched_files;
+}
+
+void sendGroupOfFiles(int socket, string filesPattern) {
+    vector<string> files = getGroupOfFiles(filesPattern);
+
+    if (files.empty()) {
+        cout << "No files matched to input." << endl;
     } else {
-        // Iterate over the results vector and print each file path
-        for (const auto& file : results) {
-            cout << file << endl;
+        for (const auto& file : files) {
+            sendOneFile(socket, file);
         }
     }
 }

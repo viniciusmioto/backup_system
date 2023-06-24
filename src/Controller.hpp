@@ -6,7 +6,7 @@
 
 /*!
  * \brief Sends the file data to the socket
- * \param socket
+ * \param socket: socket to send the file
  * \param fileName: name of the file to be sent
  * \param msgCounter: sequence number of the message
  */
@@ -14,15 +14,33 @@ void sendFileData(int socket, string fileName, int &msgCounter);
 
 /*!
  * \brief Sends one file to the socket
- * \param socket
+ * \param socket: socket to send the file
+ * \param fileName: name of the file to be sent
  */
-void sendOneFile(int socket);
+void sendOneFile(int socket, string fileName);
 
 /*!
- * \brief 
+ * \brief Gets the glob results from the pattern
+ * \param pattern: one pattern to be searched;
+ * example: "*.txt"
+ * \return vector of strings with the results (file names)
  */
-void getGroupOfFiles();
+vector<string> getGlobResults(string pattern);
 
-vector<string> getGlobResults(const string& pattern);
+/*!
+ * \brief Gets the group of files from the patterns
+ * \param filesPattern: patterns to be searched separated by space;
+ * example: "*.txt *.pdf *.png"
+ * \return vector of strings with the results (file names)
+ */
+vector<string> getGroupOfFiles(string filesPattern);
+
+/*!
+ * \brief Sends a group of files to the socket
+ * \param socket: socket to send the files
+ * \param filesPatterns: patterns to be searched separated by space;
+ * example: "*.txt *.pdf myFile.png"
+ */
+void sendGroupOfFiles(int socket, string filesPatterns);
 
 #endif
