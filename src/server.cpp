@@ -1,4 +1,4 @@
-#include "Communication.hpp"
+#include "Controller.hpp"
 
 using namespace std;
 
@@ -34,40 +34,7 @@ int main() {
             cout << "\033[0;33m waiting for message: " << msgCounter << "\033[0m" << endl;
 #endif
             if (recvMessage.sequence == msgCounter) { // check sequence
-
-                if (recvMessage.type == FILE_NAME) {
-                    sendACK(socket, msgCounter);
-
-                    // get original file name 
-                    fileName = (char *)(recvMessage.data);
-
-                    // if is in loopback interface, insert a 'b' in the beginning
-                    if (strcmp(sock, "lo") == 0)
-                        fileName.insert(0, 1, 'b');
-
-                    write_to_file(fileName, NULL, false, 0);
-
-                    cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
-                } else if (recvMessage.type != END_FILE && recvMessage.data != NULL) {
-                    size_t size = recvMessage.size;
-
-                    if (checkVerticalParity(recvMessage)) {
-                        write_to_file(fileName, recvMessage.data, true, size);
-                        sendACK(socket, msgCounter);
-                    } else {
-                        write_to_file(fileName, recvMessage.data, true, size);
-                        sendNACK(socket, msgCounter);
-                        msgCounter--; // prevent msgCounter from incrementing
-                    }
-
-                } else {
-                    sendACK(socket, msgCounter);
-                    if (recvMessage.type == END_FILE)
-                        msgCounter = -1;
-                    cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
-                }
-
-                msgCounter++;
+                receiveOneFile(socket, sock, recvMessage, msgCounter, fileName);
             }
         }
     }

@@ -11,7 +11,7 @@ void mountPackage(int *fileSize, string fileName, int *filePosition, string file
         message.parity ^= message.data[i];
 
     message.sequence = msgCounter;
-    message.type = BACKUP_1_ARQ;
+    message.type = BACKUP_ONE_FILE;
     message.size = *bytesRead;
 
     *filePosition += (MAX_DATA_SIZE);

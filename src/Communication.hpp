@@ -7,7 +7,8 @@
 #define MAX_ATTEMPTS 20
 
 typedef enum {
-    BACKUP_1_ARQ = 0,
+    BACKUP_ONE_FILE = 0,
+    BACKUP_GROUP_OF_FILES = 1,
     FILE_NAME = 6,
     END_FILE = 9,
     EXIT_CLIENT = 11,
@@ -40,7 +41,6 @@ void mountPackage(int *fileSize, string fileName, int *filePosition, string file
  * \return 0 if success, -1 if error
  */
 int sendMessage(int socket, Message message);
-
 
 /*!
  * \brief Sends a ACK message
