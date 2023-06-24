@@ -1,3 +1,4 @@
+#include "Controller.hpp"
 #include "Communication.hpp"
 
 void sendFileData(int socket, string fileName, int &msgCounter) {
@@ -44,4 +45,55 @@ void sendOneFile(int socket) {
     sendMessage(socket, endFileMsg);
     guaranteeSend(socket, endFileMsg, msgCounter);
     msgCounter = 0;
+}
+
+vector<string> getGlobResults(const string& pattern) {
+    vector<string> results;
+
+    glob_t globResult;
+    int globStatus = glob(pattern.c_str(), GLOB_TILDE, nullptr, &globResult);
+
+    if (globStatus == 0) {
+        // Iterate over the matched file paths and add them to the results vector
+        for (size_t i = 0; i < globResult.gl_pathc; ++i) {
+            results.push_back(globResult.gl_pathv[i]);
+        }
+    }
+
+    // Free the memory allocated by glob() by calling globfree()
+    globfree(&globResult);
+
+    return results;
+}
+
+void getGroupOfFiles() {
+    string patterns;
+    cout << "\033[1;36mpatterns > \033[0m";
+
+    // Read the user input patterns from the console
+    getline(cin >> ws, patterns);
+
+    vector<string> results;
+
+    istringstream iss(patterns);
+    string pattern;
+
+    // Process each pattern individually
+    while (iss >> pattern) {
+        // Call the getGlobResults function to get the matching file paths for each pattern
+        vector<string> patternResults = getGlobResults(pattern);
+
+        // Append the pattern results to the overall results vector
+        results.insert(results.end(), patternResults.begin(), patternResults.end());
+    }
+
+    if (results.empty()) {
+        // If no files match the patterns, display a message
+        cout << "No files matching the patterns found." << endl;
+    } else {
+        // Iterate over the results vector and print each file path
+        for (const auto& file : results) {
+            cout << file << endl;
+        }
+    }
 }

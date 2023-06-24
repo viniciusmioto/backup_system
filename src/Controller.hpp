@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 
 #include "Communication.hpp"
+#include <glob.h>
 
 /*!
  * \brief Sends the file data to the socket
@@ -16,5 +17,12 @@ void sendFileData(int socket, string fileName, int &msgCounter);
  * \param socket
  */
 void sendOneFile(int socket);
+
+/*!
+ * \brief 
+ */
+void getGroupOfFiles();
+
+vector<string> getGlobResults(const string& pattern);
 
 #endif

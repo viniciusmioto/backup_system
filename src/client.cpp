@@ -8,7 +8,7 @@ int main() {
     int socket = ConexaoRawSocket(interface);
 
     if (socket < 0) {
-        perror("\033[0;35m ### ERROR: Could not connect to socket. \033[0m\n");
+        cerr << "\033[0;35m ### ERROR: Could not connect to socket. \033[0m\n";
         exit(1);
     }
 
@@ -18,6 +18,7 @@ int main() {
 
         cout << "\033[1;36mSELECT ONE OPTION" << endl;
         cout << "0 - Send a File" << endl;
+        cout << "1 - List Files" << endl;
         cout << "9 - Quit" << endl;
         cout << "option > \033[0m";
         cin >> option;
@@ -27,6 +28,10 @@ int main() {
             
             sendOneFile(socket);
 
+            break;
+        }
+        case 1: {
+            getGroupOfFiles();
             break;
         }
         case EXIT:

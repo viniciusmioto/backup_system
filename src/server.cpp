@@ -18,7 +18,7 @@ int main() {
     Message recvMessage;
 
     if (socket < 0) {
-        perror("\033[0;35m ### ERROR: Could not connect to socket. \033[0m\n");
+        cerr << "\033[0;35m ### ERROR: Could not connect to socket. \033[0m\n";
         exit(1);
     }
 
