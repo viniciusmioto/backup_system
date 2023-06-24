@@ -96,7 +96,7 @@ int waitForACK(int socket, int msgCounter) {
 
 // if timeout is reached, return -1
 #ifdef DEBUG
-    cout << "\033[0;35m ### ERROR: Lost Message (Timeout) \033[0m" << endl;
+    cerr << "\033[0;35m ### ERROR: Lost Message (Timeout) \033[0m" << endl;
 #endif
 
     return -1;
@@ -117,7 +117,7 @@ void guaranteeSend(int socket, Message message, int msgCounter) {
         if (attempts >= MAX_ATTEMPTS) {
 
 #ifdef DEBUG
-            cout << "\033[0;35m ### ERROR: Could not send file name. \033[0m" << endl;
+            cerr << "\033[0;35m ### ERROR: Could not send file name. \033[0m" << endl;
 #endif
             exit(1);
         }

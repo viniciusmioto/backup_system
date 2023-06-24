@@ -8,7 +8,7 @@ int main() {
     int socket = ConexaoRawSocket(interface);
 
     if (socket < 0) {
-        perror("\033[0;35m ### ERROR: Could not connect to socket. \033[0m\n");
+        cerr << "\033[0;35m ### ERROR: Could not connect to socket. \033[0m\n";
         exit(1);
     }
 
@@ -16,16 +16,31 @@ int main() {
 
     while (option != 9) {
 
-        cout << "\033[1;36mSELECT ONE OPTION" << endl;
-        cout << "0 - Send a File" << endl;
-        cout << "9 - Quit" << endl;
-        cout << "option > \033[0m";
+        cout << "\033[1;36m SELECT ONE OPTION" << endl;
+        cout << " 0 - Send a File" << endl;
+        cout << " 1 - Send Group of Files" << endl;
+        cout << " 9 - Quit" << endl;
+        cout << " option > \033[0m";
         cin >> option;
 
         switch (option) {
         case SEND_FILE: {
-            
-            sendOneFile(socket);
+            string fileName;
+            cout << "\033[1;36m file name > \033[0m";
+            cin >> fileName;
+
+            sendOneFile(socket, fileName);
+
+            break;
+        }
+        case 1: {
+            cout << "\033[1;36m patterns > \033[0m";
+
+            string filesPattern;
+            // user input patterns from the console, "*.txt" for example
+            getline(cin >> ws, filesPattern);
+
+            sendGroupOfFiles(socket, filesPattern);
 
             break;
         }
