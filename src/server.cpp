@@ -29,6 +29,7 @@ int main() {
         recv(socket, &recvMessage, MAX_SIZE, 0); // waiting for option
 
         if (recvMessage.initMarker == INIT_MARKER) { // check if the recvMessage is valid
+            adjustMsgCounter(&msgCounter);
 
             if (recvMessage.sequence == msgCounter) { // check sequence
 
@@ -37,6 +38,7 @@ int main() {
                     cout << "...BACKUP_ONE_FILE" << endl;
                     sendACK(socket, msgCounter);
                     msgCounter++;
+                    adjustMsgCounter(&msgCounter);
                     receiveOneFile(socket, interface, msgCounter);
                     break;
 
@@ -44,13 +46,12 @@ int main() {
                     cout << "...BACKUP_GROUP_OF_FILES" << endl;
                     sendACK(socket, msgCounter);
                     msgCounter++;
+                    adjustMsgCounter(&msgCounter);
                     receiveGroupOfFiles(socket, interface, msgCounter);
                     break;
 
                 case SERVER_DIR:
                     cout << "...SERVER_DIR" << endl;
-                    sendACK(socket, msgCounter);
-                    msgCounter++;
                     receiveServerDirectory(socket, recvMessage, msgCounter);
                     break;
 

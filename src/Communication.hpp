@@ -61,6 +61,13 @@ void sendACK(int socket, int msgCounter);
 void sendNACK(int socket, int msgCounter);
 
 /*!
+ * \brief Sends a ERROR message
+ * \param socket
+ * \param msgCounter: message sequence number
+ */
+void sendERROR(int socket, int msgCounter);
+
+/*!
  * \brief Waits for a ACK message for each message sent (TIMEOUT)
  * \param socket
  * \param msgCounter: message sequence number
