@@ -39,6 +39,7 @@ void sendFile(int socket, string fileName, int &msgCounter) {
     Message endFileMsg(sizeof(""), msgCounter, END_FILE, (unsigned char *)"", 0);
     sendMessage(socket, endFileMsg);
     guaranteeSend(socket, endFileMsg, msgCounter);
+    msgCounter++;
 }
 
 void sendOneFile(int socket, string fileName, int &msgCounter) {
@@ -90,9 +91,10 @@ vector<string> getGroupOfFiles(string filePatterns) {
 void sendGroupOfFiles(int socket, string filesPattern, int &msgCounter) {
     vector<string> files = getGroupOfFiles(filesPattern);
 
-    Message backupGroupMsg(sizeof(""), 0, BACKUP_GROUP_OF_FILES, (unsigned char *)"", 0);
+    Message backupGroupMsg(sizeof(""), msgCounter, BACKUP_GROUP_OF_FILES, (unsigned char *)"", 0);
     sendMessage(socket, backupGroupMsg);
     guaranteeSend(socket, backupGroupMsg, msgCounter);
+    msgCounter++;
 
     if (files.empty()) {
         cout << "No files matched to input." << endl;
@@ -102,7 +104,6 @@ void sendGroupOfFiles(int socket, string filesPattern, int &msgCounter) {
         }
     }
 
-    msgCounter++;
     adjustMsgCounter(&msgCounter);
     Message endGroupOfFilesMsg(sizeof(""), msgCounter, END_GROUP_OF_FILES, (unsigned char *)"", 0);
     sendMessage(socket, endGroupOfFilesMsg);
@@ -160,6 +161,7 @@ void receiveOneFile(int socket, char sock[], int &msgCounter) {
 
     if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_FILE) {
         sendACK(socket, msgCounter);
+        msgCounter++;
         cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
     }
 
@@ -177,7 +179,7 @@ void receiveGroupOfFiles(int socket, char sock[], int &msgCounter) {
         if (recvMessage.initMarker == INIT_MARKER && recvMessage.sequence == msgCounter) {
 
             if (recvMessage.type == FILE_NAME) {
-                sendACK(socket, 1);
+                sendACK(socket, msgCounter);
                 // get original file name
                 fileName = getFileName(socket, sock, recvMessage, msgCounter);
                 cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
@@ -204,7 +206,7 @@ void receiveGroupOfFiles(int socket, char sock[], int &msgCounter) {
     }
 
     if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_GROUP_OF_FILES) {
-        cout << "\033[0;32m backup: group of files complete.\033[0m" << endl;
+        cout << "\033[0m BACKUP_GROUP_OF_FILES: complete.\033[0m" << endl;
         sendACK(socket, msgCounter);
     }
 

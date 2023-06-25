@@ -5,7 +5,7 @@ using namespace std;
 int msgCounter = 0;
 
 int main() {
-    // interface de rede eno1 (dois computadores)
+    // network interface eno1 (two computers)
     const char *interface = "lo";
     int socket = RawSocketConnection(interface);
 
