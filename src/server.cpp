@@ -55,6 +55,12 @@ int main() {
                     receiveServerDirectory(socket, recvMessage, msgCounter);
                     break;
 
+                case OK:
+                    cout << "...OK" << endl;
+                    msgCounter++;
+                    adjustMsgCounter(&msgCounter);
+                    sendServerWorkingDirectory(socket, msgCounter);
+                    break;
                 default:
                     break;
                 }

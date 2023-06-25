@@ -259,9 +259,9 @@ void sendServerDirectory(int socket, string path, int &msgCounter) {
     memcpy(&chooseDirMsg.data, path.c_str(), sizeof(chooseDirMsg.data));
 
     sendMessage(socket, chooseDirMsg);
-    if (guaranteeSend(socket, chooseDirMsg, msgCounter)) 
+    if (guaranteeSend(socket, chooseDirMsg, msgCounter))
         cout << " SERVER_DIR: changed to " << path << endl;
-    else 
+    else
         cout << "\033[0;33m Warning SERVER_DIR: failed to change \033[0m" << endl;
     msgCounter++;
     adjustMsgCounter(&msgCounter);
@@ -279,8 +279,37 @@ void receiveServerDirectory(int socket, Message recvMessage, int &msgCounter) {
     adjustMsgCounter(&msgCounter);
 }
 
-// 0 - test2.txt
-// 8 - ./test/
-// 0 - test.txt
-// 4 - ./test/
-// 0 - test.txt
+void getServerWorkingDirectory(int socket, int &msgCounter) {
+    Message getServerDirMsg(sizeof(""), msgCounter, OK, (unsigned char *)"", 0);
+
+    sendMessage(socket, getServerDirMsg);
+
+    Message recvMessage;
+    while (recvMessage.initMarker != INIT_MARKER || recvMessage.type != OK || recvMessage.sequence != msgCounter + 1) {
+        recv(socket, &recvMessage, MAX_SIZE, 0);
+
+        cout << recvMessage.data << endl;
+    }
+    if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == OK && recvMessage.data != NULL) {
+        cout << " SERVER_DIR: " << recvMessage.data << endl;
+        msgCounter++;
+        adjustMsgCounter(&msgCounter);
+        sendACK(socket, msgCounter);
+        msgCounter++;
+        adjustMsgCounter(&msgCounter);
+    }
+}
+
+void sendServerWorkingDirectory(int socket, int &msgCounter) {
+    Message currentServerDirMsg(sizeof(""), msgCounter, OK, (unsigned char *)"", 0);
+    string serverDir = getCurrentDirectory();
+    memcpy(&currentServerDirMsg.data, serverDir.c_str(), sizeof(currentServerDirMsg.data));
+
+    sendMessage(socket, currentServerDirMsg);
+    if (guaranteeSend(socket, currentServerDirMsg, msgCounter))
+        msgCounter++;
+    else
+        cout << "\033[0;33m Warning SERVER_DIR: failed to send \033[0m" << endl;
+
+    adjustMsgCounter(&msgCounter);
+}

@@ -106,4 +106,18 @@ void sendServerDirectory(int socket, string path, int &msgCounter);
  */
 void receiveServerDirectory(int socket, Message recvMessage, int &msgCounter);
 
+/*!
+ * \brief Gets the server working directory
+ * \param socket: socket to receive the directory
+ * \param msgCounter: sequence number of the message
+ */
+void getServerWorkingDirectory(int socket, int &msgCounter);
+
+/*!
+ * \brief Sends the server working directory
+ * \param socket: socket to send the directory
+ * \param msgCounter: sequence number of the message
+ */
+void sendServerWorkingDirectory(int socket, int &msgCounter);
+
 #endif
