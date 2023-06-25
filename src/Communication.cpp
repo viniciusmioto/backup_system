@@ -25,7 +25,7 @@ int sendMessage(int socket, Message message) {
 
 #ifdef DEBUG
     if (message.type != ACK && message.type != NACK)
-        cout << "\033[0;32m >> Send [" << message.sequence << "] \033[0m" << message.data << endl;
+        cout << "\033[0;32m >> Send [" << message.sequence << "](" << message.type << ") \033[0m" << message.data << endl;
 #endif
 
     return send(socket, buffer, MAX_SIZE, 0);

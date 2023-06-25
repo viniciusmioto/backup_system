@@ -11,6 +11,7 @@ typedef enum {
     BACKUP_GROUP_OF_FILES = 1,
     FILE_NAME = 6,
     END_FILE = 9,
+    END_GROUP_OF_FILES = 10,
     DATA = 11,
     ERRO = 12,
     OK = 13,

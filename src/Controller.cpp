@@ -23,10 +23,9 @@ void sendFileData(int socket, string fileName, int &msgCounter) {
     }
 }
 
-void sendFile(int socket, string fileName) {
-    int msgCounter = 1;
+void sendFile(int socket, string fileName, int &msgCounter) {
 
-    // send first message to inform the file name - msgCounter = 0
+    // send first message to inform the file name
     Message fileNameMsg(sizeof(fileName), msgCounter, FILE_NAME, (unsigned char *)fileName.c_str(), 0);
     sendMessage(socket, fileNameMsg);
     guaranteeSend(socket, fileNameMsg, msgCounter);
@@ -40,18 +39,16 @@ void sendFile(int socket, string fileName) {
     Message endFileMsg(sizeof(""), msgCounter, END_FILE, (unsigned char *)"", 0);
     sendMessage(socket, endFileMsg);
     guaranteeSend(socket, endFileMsg, msgCounter);
-    msgCounter = 0;
+    msgCounter++;
 }
 
-void sendOneFile(int socket, string fileName) {
-    int msgCounter = 0;
-
+void sendOneFile(int socket, string fileName, int &msgCounter) {
     Message backupOneMsg(sizeof(""), msgCounter, BACKUP_ONE_FILE, (unsigned char *)"", 0);
     sendMessage(socket, backupOneMsg);
     guaranteeSend(socket, backupOneMsg, msgCounter);
     msgCounter++;
 
-    sendFile(socket, fileName);
+    sendFile(socket, fileName, msgCounter);
 }
 
 vector<string> getGlobResults(string pattern) {
@@ -91,16 +88,26 @@ vector<string> getGroupOfFiles(string filePatterns) {
     return matched_files;
 }
 
-void sendGroupOfFiles(int socket, string filesPattern) {
+void sendGroupOfFiles(int socket, string filesPattern, int &msgCounter) {
     vector<string> files = getGroupOfFiles(filesPattern);
+
+    Message backupGroupMsg(sizeof(""), msgCounter, BACKUP_GROUP_OF_FILES, (unsigned char *)"", 0);
+    sendMessage(socket, backupGroupMsg);
+    guaranteeSend(socket, backupGroupMsg, msgCounter);
+    msgCounter++;
 
     if (files.empty()) {
         cout << "No files matched to input." << endl;
     } else {
         for (const auto &file : files) {
-            sendOneFile(socket, file);
+            sendFile(socket, file, msgCounter);
         }
     }
+
+    adjustMsgCounter(&msgCounter);
+    Message endGroupOfFilesMsg(sizeof(""), msgCounter, END_GROUP_OF_FILES, (unsigned char *)"", 0);
+    sendMessage(socket, endGroupOfFilesMsg);
+    guaranteeSend(socket, endGroupOfFilesMsg, msgCounter);
 }
 
 string getFileName(int socket, char sock[], Message recvMessage, int &msgCounter) {
@@ -118,8 +125,9 @@ string getFileName(int socket, char sock[], Message recvMessage, int &msgCounter
     return fileName;
 }
 
-void receiveOneFile(int socket, char sock[], int &msgCounter, string &fileName) {
+void receiveOneFile(int socket, char sock[], int &msgCounter) {
     Message recvMessage;
+    string fileName;
 
     while (recvMessage.type != END_FILE) {
         recv(socket, &recvMessage, MAX_SIZE, 0);
@@ -153,12 +161,53 @@ void receiveOneFile(int socket, char sock[], int &msgCounter, string &fileName) 
 
     if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_FILE) {
         sendACK(socket, msgCounter);
+        msgCounter++;
         cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
     }
 
-    msgCounter = 0;
 }
 
-void receiveGroupOfFiles(int socket, char sock[], int &msgCounter, string &fileName) {
-    receiveOneFile(socket, sock, msgCounter, fileName);
+void receiveGroupOfFiles(int socket, char sock[], int &msgCounter) {
+    Message recvMessage;
+    string fileName;
+
+    while (recvMessage.type != END_GROUP_OF_FILES) {
+        recv(socket, &recvMessage, MAX_SIZE, 0);
+
+        adjustMsgCounter(&msgCounter);
+
+        if (recvMessage.initMarker == INIT_MARKER && recvMessage.sequence == msgCounter) {
+
+            if (recvMessage.type == FILE_NAME) {
+                sendACK(socket, msgCounter);
+                // get original file name
+                fileName = getFileName(socket, sock, recvMessage, msgCounter);
+                cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
+
+                msgCounter++;
+
+            } else if (recvMessage.type == DATA && recvMessage.data != NULL) {
+                size_t size = recvMessage.size;
+
+                if (checkVerticalParity(recvMessage)) {
+                    write_to_file(fileName, recvMessage.data, true, size);
+                    sendACK(socket, msgCounter);
+                    msgCounter++;
+                } else {
+                    sendNACK(socket, msgCounter);
+                    // do not increment msgCounter!
+                }
+            } else if (recvMessage.type == END_FILE) {
+                sendACK(socket, msgCounter);
+                cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
+                msgCounter++;
+            }
+        }
+    }
+
+    if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_GROUP_OF_FILES) {
+        cout << "\033[0m BACKUP_GROUP_OF_FILES: complete.\033[0m" << endl;
+        sendACK(socket, msgCounter);
+    }
+
 }
