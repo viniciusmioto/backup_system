@@ -22,19 +22,29 @@ int main() {
         exit(1);
     }
 
-
     while (1) {
         if (msgCounter > MAX_DATA_SIZE)
             msgCounter = 0;
 
-        recv(socket, &recvMessage, MAX_SIZE, 0); // receive the recvMessage from the client
+        // receive the recvMessage from the client (TYPE)
+        recv(socket, &recvMessage, MAX_SIZE, 0); // waiting for option
 
         if (recvMessage.initMarker == INIT_MARKER) { // check if the recvMessage is valid
-#ifdef DEBUG
-            cout << "\033[0;33m waiting for message: " << msgCounter << "\033[0m" << endl;
-#endif
+
             if (recvMessage.sequence == msgCounter) { // check sequence
-                receiveOneFile(socket, sock, recvMessage, msgCounter, fileName);
+
+                switch (recvMessage.type) {
+                case BACKUP_ONE_FILE:
+#ifdef DEBUG
+                    cout << "BACKUP_ONE_FILE" << endl;
+#endif
+                    sendACK(socket, msgCounter);
+                    receiveOneFile(socket, sock, msgCounter, fileName);
+                    break;
+
+                default:
+                    break;
+                }
             }
         }
     }
