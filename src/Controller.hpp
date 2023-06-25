@@ -84,4 +84,20 @@ bool fileExists(string fileName);
  */
 bool changeDirectory(const string &path);
 
+/*!
+ * \brief Send to change server working directory
+ * \param socket: socket to send the directory
+ * \param path: path of the directory
+ * \param msgCounter: sequence number of the message
+ */
+void sendServerDirectory(int socket, string path, int &msgCounter);
+
+/*!
+ * \brief Receives to change the server working directory
+ * \param socket: socket to receive the directory
+ * \param recvMessage: message received
+ * \param msgCounter: sequence number of the message
+ */
+void receiveServerDirectory(int socket, Message recvMessage, int &msgCounter);
+
 #endif

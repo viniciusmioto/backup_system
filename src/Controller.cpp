@@ -12,7 +12,6 @@ void sendFileData(int socket, string fileName, int &msgCounter) {
 
     // loop until get all content (limit of MAX_DATA_SIZE bytes each message)
     while (fileSize > 0) {
-        adjustMsgCounter(&msgCounter);
 
         Message packageMsg;
 
@@ -20,6 +19,7 @@ void sendFileData(int socket, string fileName, int &msgCounter) {
         sendMessage(socket, packageMsg); // send the file content
         guaranteeSend(socket, packageMsg, msgCounter);
         msgCounter++;
+        adjustMsgCounter(&msgCounter);
     }
 }
 
@@ -40,6 +40,7 @@ void sendFile(int socket, string fileName, int &msgCounter) {
     sendMessage(socket, endFileMsg);
     guaranteeSend(socket, endFileMsg, msgCounter);
     msgCounter++;
+    adjustMsgCounter(&msgCounter);
 }
 
 void sendOneFile(int socket, string fileName, int &msgCounter) {
@@ -52,6 +53,7 @@ void sendOneFile(int socket, string fileName, int &msgCounter) {
     sendMessage(socket, backupOneMsg);
     guaranteeSend(socket, backupOneMsg, msgCounter);
     msgCounter++;
+    adjustMsgCounter(&msgCounter);
 
     sendFile(socket, fileName, msgCounter);
 }
@@ -104,6 +106,7 @@ void sendGroupOfFiles(int socket, string filesPattern, int &msgCounter) {
         sendMessage(socket, backupGroupMsg);
         guaranteeSend(socket, backupGroupMsg, msgCounter);
         msgCounter++;
+        adjustMsgCounter(&msgCounter);
 
         for (const auto &file : files) {
             sendFile(socket, file, msgCounter);
@@ -149,6 +152,7 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
                 cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
 
                 msgCounter++;
+                adjustMsgCounter(&msgCounter);
 
             } else if (recvMessage.type == DATA && recvMessage.data != NULL) {
                 size_t size = recvMessage.size;
@@ -157,6 +161,8 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
                     write_to_file(fileName, recvMessage.data, true, size);
                     sendACK(socket, msgCounter);
                     msgCounter++;
+                    adjustMsgCounter(&msgCounter);
+
                 } else {
                     sendNACK(socket, msgCounter);
                     // do not increment msgCounter!
@@ -168,6 +174,7 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
     if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_FILE) {
         sendACK(socket, msgCounter);
         msgCounter++;
+        adjustMsgCounter(&msgCounter);
         cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
     }
 }
@@ -190,6 +197,7 @@ void receiveGroupOfFiles(int socket, char interface[], int &msgCounter) {
                 cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
 
                 msgCounter++;
+                adjustMsgCounter(&msgCounter);
 
             } else if (recvMessage.type == DATA && recvMessage.data != NULL) {
                 size_t size = recvMessage.size;
@@ -198,6 +206,7 @@ void receiveGroupOfFiles(int socket, char interface[], int &msgCounter) {
                     write_to_file(fileName, recvMessage.data, true, size);
                     sendACK(socket, msgCounter);
                     msgCounter++;
+                    adjustMsgCounter(&msgCounter);
                 } else {
                     sendNACK(socket, msgCounter);
                     // do not increment msgCounter!
@@ -206,13 +215,16 @@ void receiveGroupOfFiles(int socket, char interface[], int &msgCounter) {
                 sendACK(socket, msgCounter);
                 cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
                 msgCounter++;
+                adjustMsgCounter(&msgCounter);
             }
         }
     }
 
     if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_GROUP_OF_FILES) {
-        cout << "\033[0m BACKUP_GROUP_OF_FILES: complete.\033[0m" << endl;
+        cout << " BACKUP_GROUP_OF_FILES: complete.\033[0m" << endl;
         sendACK(socket, msgCounter);
+        msgCounter++;
+        adjustMsgCounter(&msgCounter);
     }
 }
 
@@ -221,12 +233,50 @@ bool fileExists(string fileName) {
     return file.good();
 }
 
-bool changeDirectory(const string& path) {
+string getCurrentDirectory() {
+    char buffer[PATH_MAX];
+    if (getcwd(buffer, sizeof(buffer)) != NULL) {
+        return std::string(buffer);
+    } else {
+        std::cerr << "Failed to get the current directory." << std::endl;
+        return "";
+    }
+}
+
+bool changeDirectory(const string &path) {
     if (chdir(path.c_str()) == 0) {
-        cout << "Current directory changed to: " << path << endl;
+        cout << "Current directory changed to: " << getCurrentDirectory() << endl;
         return true;
     } else {
-        cerr << "\033[0;35m ### ERROR: Could not Change Directory \033[0m" << path << endl;
+        cerr << "\033[0;33m Warning: Could not Change Directory \033[0m" << path << endl;
         return false;
     }
 }
+
+void sendServerDirectory(int socket, string path, int &msgCounter) {
+    Message chooseDirMsg(sizeof(""), msgCounter, SERVER_DIR, (unsigned char *)"", 0);
+    memcpy(&chooseDirMsg.data, path.c_str(), sizeof(chooseDirMsg.data));
+
+    sendMessage(socket, chooseDirMsg);
+    guaranteeSend(socket, chooseDirMsg, msgCounter);
+    msgCounter++;
+    adjustMsgCounter(&msgCounter);
+}
+
+void receiveServerDirectory(int socket, Message recvMessage, int &msgCounter) {
+    if (changeDirectory((char *)recvMessage.data)) {
+        sendACK(socket, msgCounter);
+        msgCounter++;
+        adjustMsgCounter(&msgCounter);
+        return;
+    }
+    sendERROR(socket, msgCounter);
+    msgCounter++;
+    adjustMsgCounter(&msgCounter);
+}
+
+// 0 - test2.txt
+// 8 - ./test/
+// 0 - test.txt
+// 4 - ./test/
+// 0 - test.txt

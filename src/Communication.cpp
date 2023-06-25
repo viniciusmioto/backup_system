@@ -42,7 +42,7 @@ void sendACK(int socket, int msgCounter) {
 
     sendMessage(socket, message);
 }
-    
+
 void sendNACK(int socket, int msgCounter) {
     Message message;
     message.type = NACK;
@@ -50,6 +50,18 @@ void sendNACK(int socket, int msgCounter) {
 
 #ifdef DEBUG
     cout << "\033[0;35m >> Send NACK [" << message.sequence << "] \033[0m" << endl;
+#endif
+
+    sendMessage(socket, message);
+}
+
+void sendERROR(int socket, int msgCounter) {
+    Message message;
+    message.type = ERROR;
+    message.sequence = msgCounter;
+
+#ifdef DEBUG
+    cout << "\033[0;35m >> Send ERROR # [" << message.sequence << "] \033[0m" << endl;
 #endif
 
     sendMessage(socket, message);
@@ -77,21 +89,30 @@ int waitForACK(int socket, int msgCounter) {
 #endif
 
         // check if it is the ACK that we are waiting for
-        if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == ACK && recvMessage.sequence == msgCounter) {
-#ifdef DEBUG
-            cout << "\033[0;34m << Received ACK [" << recvMessage.sequence << "] \033[0m" << recvMessage.data << endl;
-#endif
-            return ACK;
+        if (recvMessage.initMarker == INIT_MARKER && recvMessage.sequence == msgCounter) {
 
-        // check if it is a NACK
-        } else if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == NACK && recvMessage.sequence == msgCounter) {
+            // check if it is a ACK
+            if (recvMessage.type == ACK) {
 #ifdef DEBUG
-            cout << "\033[0;35m << Received NACK [" << recvMessage.sequence << "] \033[0m" << recvMessage.data << endl;
+                cout << "\033[0;34m << Received ACK [" << recvMessage.sequence << "] \033[0m" << recvMessage.data << endl;
 #endif
-            return NACK;
+                return ACK;
+            }
+
+            // check if it is a NACK
+            else if (recvMessage.type == NACK) {
+#ifdef DEBUG
+                cout << "\033[0;35m << Received NACK [" << recvMessage.sequence << "] \033[0m" << recvMessage.data << endl;
+#endif
+                return NACK;
+            } else if (recvMessage.type == ERROR) {
+                cerr << "\033[0;35m << Received ERROR [" << recvMessage.sequence << "] \033[0m" << recvMessage.data << endl;
+
+                return ERROR;
+            }
+
+            // until timeout is reached
         }
-
-    // until timeout is reached
     } while (getCurrentTime() - start <= TIMEOUT);
 
 // if timeout is reached, return -1
@@ -105,11 +126,11 @@ int waitForACK(int socket, int msgCounter) {
 void guaranteeSend(int socket, Message message, int msgCounter) {
     int attempts = 0;
 
-    // send message and wait for ACK  
-    while (waitForACK(socket, msgCounter) != ACK) {
+    // send message and wait for ACK
+    while (waitForACK(socket, msgCounter) != ACK && waitForACK(socket, msgCounter) != ERROR) {
 
 #ifdef DEBUG
-        cout << "\033[0;33m -> Trying to send again..." << attempts << "º attempt\033[0m" << endl;
+        cout << "\033[0;33m -> Trying to send again... " << attempts << "º attempt\033[0m" << endl;
 #endif
         sendMessage(socket, message);
         attempts++;

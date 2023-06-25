@@ -9,6 +9,9 @@
 typedef enum {
     BACKUP_ONE_FILE = 0,
     BACKUP_GROUP_OF_FILES = 1,
+    RESTORE_ONE_FILE = 2,
+    RESTORE_GROUP_OF_FILES = 3,
+    SERVER_DIR = 4,
     FILE_NAME = 6,
     END_FILE = 9,
     END_GROUP_OF_FILES = 10,
@@ -56,6 +59,13 @@ void sendACK(int socket, int msgCounter);
  * \param msgCounter: message sequence number
  */
 void sendNACK(int socket, int msgCounter);
+
+/*!
+ * \brief Sends a ERROR message
+ * \param socket
+ * \param msgCounter: message sequence number
+ */
+void sendERROR(int socket, int msgCounter);
 
 /*!
  * \brief Waits for a ACK message for each message sent (TIMEOUT)
