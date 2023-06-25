@@ -39,6 +39,7 @@ int main() {
                     cout << "BACKUP_ONE_FILE" << endl;
 #endif
                     sendACK(socket, msgCounter);
+                    msgCounter++;
                     receiveOneFile(socket, sock, msgCounter, fileName);
                     break;
 

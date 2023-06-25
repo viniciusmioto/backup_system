@@ -47,6 +47,6 @@ string getFileName(int socket, char sock[], Message recvMessage, int &msgCounter
 
 void receiveOneFile(int socket, char sock[], int &msgCounter, string &fileName);
 
-void receiveGroupOfFiles(int socket, char sock[], Message recvMessage, int &msgCounter, string &fileName);
+void receiveGroupOfFiles(int socket, char sock[], int &msgCounter, string &fileName);
 
 #endif
