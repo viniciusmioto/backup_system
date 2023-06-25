@@ -260,7 +260,7 @@ void sendServerDirectory(int socket, string path, int &msgCounter) {
 
     sendMessage(socket, chooseDirMsg);
     if (guaranteeSend(socket, chooseDirMsg, msgCounter)) 
-        cout << "SERVER_DIR: changed to " << path << endl;
+        cout << " SERVER_DIR: changed to " << path << endl;
     else 
         cout << "\033[0;33m Warning SERVER_DIR: failed to change \033[0m" << endl;
     msgCounter++;

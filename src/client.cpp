@@ -21,8 +21,10 @@ int main() {
         cout << "\033[1;36m SELECT ONE OPTION" << endl;
         cout << " 0 - Send a File" << endl;
         cout << " 1 - Send Group of Files" << endl;
-        cout << " 4 - Choose Server Directory" << endl;
-        cout << " 8 - Change Local Directory" << endl;
+        cout << " 4 - Server Change Directory S(CD)" << endl;
+        cout << " 5 - Local Change Directory L(CD)" << endl;
+        cout << " 6 - Print Local Working Directory L(PWD)" << endl;
+        cout << " 7 - Print Server Working Directory S(PWD)" << endl;
         cout << " 9 - Quit" << endl;
         cout << " option > \033[0m";
         cin >> option;
@@ -54,12 +56,17 @@ int main() {
             sendServerDirectory(socket, dirName, msgCounter);
             break;
         }
-        case 8: {
+        case 5: {
             string dirName;
             cout << "\033[1;36m directory name > \033[0m";
             cin >> dirName;
 
             changeDirectory(dirName);
+            break;
+        }
+        case 6: {
+            cout << "\033[1;36m Local Working Directory: \033[0m";
+            cout << getCurrentDirectory() << endl;
             break;
         }
         case EXIT:

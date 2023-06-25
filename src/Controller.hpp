@@ -78,6 +78,12 @@ void receiveGroupOfFiles(int socket, char interface[], int &msgCounter);
 bool fileExists(string fileName);
 
 /*!
+ * \brief Gets the current directory
+ * \return current directory
+ */
+string getCurrentDirectory();
+
+/*!
  * \brief Changes the current directory to the path
  * \param path: path of the directory
  * \return true if the directory exists, false otherwise
