@@ -23,8 +23,8 @@ void sendFileData(int socket, string fileName, int &msgCounter) {
     }
 }
 
-void sendOneFile(int socket, string fileName) {
-    int msgCounter = 0;
+void sendFile(int socket, string fileName) {
+    int msgCounter = 1;
 
     // send first message to inform the file name - msgCounter = 0
     Message fileNameMsg(sizeof(fileName), msgCounter, FILE_NAME, (unsigned char *)fileName.c_str(), 0);
@@ -41,6 +41,17 @@ void sendOneFile(int socket, string fileName) {
     sendMessage(socket, endFileMsg);
     guaranteeSend(socket, endFileMsg, msgCounter);
     msgCounter = 0;
+}
+
+void sendOneFile(int socket, string fileName) {
+    int msgCounter = 0;
+
+    Message backupOneMsg(sizeof(""), msgCounter, BACKUP_ONE_FILE, (unsigned char *)"", 0);
+    sendMessage(socket, backupOneMsg);
+    guaranteeSend(socket, backupOneMsg, msgCounter);
+    msgCounter++;
+
+    sendFile(socket, fileName);
 }
 
 vector<string> getGlobResults(string pattern) {
@@ -107,36 +118,49 @@ string getFileName(int socket, char sock[], Message recvMessage, int &msgCounter
     return fileName;
 }
 
-void receiveOneFile(int socket, char sock[], Message recvMessage, int &msgCounter, string &fileName) {
-    if (recvMessage.type == FILE_NAME) {
-        sendACK(socket, msgCounter);
+void receiveOneFile(int socket, char sock[], int &msgCounter, string &fileName) {
+    Message recvMessage;
 
-        // get original file name
-        fileName = getFileName(socket, sock, recvMessage, msgCounter);
-        cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
+    cout << "msgCounter: " << msgCounter << endl;
 
-    } else if (recvMessage.type != END_FILE && recvMessage.data != NULL) {
-        size_t size = recvMessage.size;
+    while (recvMessage.type != END_FILE) {
+        recv(socket, &recvMessage, MAX_SIZE, 0);
 
-        if (checkVerticalParity(recvMessage)) {
-            write_to_file(fileName, recvMessage.data, true, size);
-            sendACK(socket, msgCounter);
-        } else {
-            write_to_file(fileName, recvMessage.data, true, size);
-            sendNACK(socket, msgCounter);
-            msgCounter--; // prevent msgCounter from incrementing
+        if (recvMessage.initMarker == INIT_MARKER) {
+            if (recvMessage.type == FILE_NAME) {
+                cout << "msgCounter: " << msgCounter << endl;
+
+                sendACK(socket, msgCounter);
+                msgCounter++;
+
+                // get original file name
+                fileName = getFileName(socket, sock, recvMessage, msgCounter);
+                cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
+
+            } else if (recvMessage.type == DATA && recvMessage.sequence == msgCounter && recvMessage.data != NULL) {
+                size_t size = recvMessage.size;
+
+                if (checkVerticalParity(recvMessage)) {
+                    write_to_file(fileName, recvMessage.data, true, size);
+                    sendACK(socket, msgCounter);
+                    msgCounter++;
+                } else {
+                    sendNACK(socket, msgCounter);
+                    // do not increment msgCounter!
+                }
+            }
         }
-
-    } else {
-        sendACK(socket, msgCounter);
-        if (recvMessage.type == END_FILE)
-            msgCounter = -1;
-        cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
     }
+
+    if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_FILE) {
+        sendACK(socket, msgCounter);
+        msgCounter = -1;
+    }
+    cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
 
     msgCounter++;
 }
 
 void receiveGroupOfFiles(int socket, char sock[], Message recvMessage, int &msgCounter, string &fileName) {
-    receiveOneFile(socket, sock, recvMessage, msgCounter, fileName);
+    receiveOneFile(socket, sock, msgCounter, fileName);
 }
