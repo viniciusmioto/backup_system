@@ -34,21 +34,24 @@ int main() {
 
                 switch (recvMessage.type) {
                 case BACKUP_ONE_FILE:
-#ifdef DEBUG
-                    cout << "BACKUP_ONE_FILE" << endl;
-#endif
+                    cout << "...BACKUP_ONE_FILE" << endl;
                     sendACK(socket, msgCounter);
                     msgCounter++;
                     receiveOneFile(socket, interface, msgCounter);
                     break;
 
                 case BACKUP_GROUP_OF_FILES:
-#ifdef DEBUG
-                    cout << "BACKUP_GROUP_OF_FILES" << endl;
-#endif
+                    cout << "...BACKUP_GROUP_OF_FILES" << endl;
                     sendACK(socket, msgCounter);
                     msgCounter++;
                     receiveGroupOfFiles(socket, interface, msgCounter);
+                    break;
+
+                case SERVER_DIR:
+                    cout << "...SERVER_DIR" << endl;
+                    sendACK(socket, msgCounter);
+                    msgCounter++;
+                    receiveServerDirectory(socket, recvMessage, msgCounter);
                     break;
 
                 default:

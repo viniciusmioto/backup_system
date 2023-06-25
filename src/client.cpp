@@ -21,7 +21,8 @@ int main() {
         cout << "\033[1;36m SELECT ONE OPTION" << endl;
         cout << " 0 - Send a File" << endl;
         cout << " 1 - Send Group of Files" << endl;
-        cout << " 8 - Change Directory" << endl;
+        cout << " 4 - Choose Server Directory" << endl;
+        cout << " 8 - Change Local Directory" << endl;
         cout << " 9 - Quit" << endl;
         cout << " option > \033[0m";
         cin >> option;
@@ -43,6 +44,14 @@ int main() {
             getline(cin >> ws, filesPattern);
 
             sendGroupOfFiles(socket, filesPattern, msgCounter);
+            break;
+        }
+        case 4: {
+            string dirName;
+            cout << "\033[1;36m directory name > \033[0m";
+            cin >> dirName;
+
+            sendServerDirectory(socket, dirName, msgCounter);
             break;
         }
         case 8: {

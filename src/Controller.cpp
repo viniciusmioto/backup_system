@@ -221,12 +221,36 @@ bool fileExists(string fileName) {
     return file.good();
 }
 
-bool changeDirectory(const string& path) {
+string getCurrentDirectory() {
+    char buffer[PATH_MAX];
+    if (getcwd(buffer, sizeof(buffer)) != NULL) {
+        return std::string(buffer);
+    } else {
+        std::cerr << "Failed to get the current directory." << std::endl;
+        return "";
+    }
+}
+
+bool changeDirectory(const string &path) {
     if (chdir(path.c_str()) == 0) {
-        cout << "Current directory changed to: " << path << endl;
+        cout << "Current directory changed to: " << getCurrentDirectory() << endl;
         return true;
     } else {
-        cerr << "\033[0;35m ### ERROR: Could not Change Directory \033[0m" << path << endl;
+        cerr << "\033[0;33m Warning: Could not Change Directory \033[0m" << path << endl;
         return false;
     }
+}
+
+void sendServerDirectory(int socket, string path, int &msgCounter) {
+    Message chooseDirMsg(sizeof(""), msgCounter, SERVER_DIR, (unsigned char *)"", 0);
+    memcpy(&chooseDirMsg.data, path.c_str(), sizeof(chooseDirMsg.data));
+
+    sendMessage(socket, chooseDirMsg);
+    guaranteeSend(socket, chooseDirMsg, msgCounter);
+    msgCounter++;
+
+}
+
+void receiveServerDirectory(int socket, Message recvMessage, int &msgCounter) {
+    changeDirectory((char *)recvMessage.data);
 }
