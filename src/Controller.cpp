@@ -43,6 +43,11 @@ void sendFile(int socket, string fileName, int &msgCounter) {
 }
 
 void sendOneFile(int socket, string fileName, int &msgCounter) {
+    if (!fileExists(fileName)) {
+        cerr << "\033[0;35m ### ERROR: File does not exist. \033[0m" << endl;
+        return;
+    }
+
     Message backupOneMsg(sizeof(""), msgCounter, BACKUP_ONE_FILE, (unsigned char *)"", 0);
     sendMessage(socket, backupOneMsg);
     guaranteeSend(socket, backupOneMsg, msgCounter);
@@ -91,23 +96,24 @@ vector<string> getGroupOfFiles(string filePatterns) {
 void sendGroupOfFiles(int socket, string filesPattern, int &msgCounter) {
     vector<string> files = getGroupOfFiles(filesPattern);
 
-    Message backupGroupMsg(sizeof(""), msgCounter, BACKUP_GROUP_OF_FILES, (unsigned char *)"", 0);
-    sendMessage(socket, backupGroupMsg);
-    guaranteeSend(socket, backupGroupMsg, msgCounter);
-    msgCounter++;
-
     if (files.empty()) {
         cout << "No files matched to input." << endl;
+        return;
     } else {
+        Message backupGroupMsg(sizeof(""), msgCounter, BACKUP_GROUP_OF_FILES, (unsigned char *)"", 0);
+        sendMessage(socket, backupGroupMsg);
+        guaranteeSend(socket, backupGroupMsg, msgCounter);
+        msgCounter++;
+
         for (const auto &file : files) {
             sendFile(socket, file, msgCounter);
         }
-    }
 
-    adjustMsgCounter(&msgCounter);
-    Message endGroupOfFilesMsg(sizeof(""), msgCounter, END_GROUP_OF_FILES, (unsigned char *)"", 0);
-    sendMessage(socket, endGroupOfFilesMsg);
-    guaranteeSend(socket, endGroupOfFilesMsg, msgCounter);
+        adjustMsgCounter(&msgCounter);
+        Message endGroupOfFilesMsg(sizeof(""), msgCounter, END_GROUP_OF_FILES, (unsigned char *)"", 0);
+        sendMessage(socket, endGroupOfFilesMsg);
+        guaranteeSend(socket, endGroupOfFilesMsg, msgCounter);
+    }
 }
 
 string getFileName(int socket, char sock[], Message recvMessage, int &msgCounter) {
@@ -164,7 +170,6 @@ void receiveOneFile(int socket, char sock[], int &msgCounter) {
         msgCounter++;
         cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
     }
-
 }
 
 void receiveGroupOfFiles(int socket, char sock[], int &msgCounter) {
@@ -209,5 +214,9 @@ void receiveGroupOfFiles(int socket, char sock[], int &msgCounter) {
         cout << "\033[0m BACKUP_GROUP_OF_FILES: complete.\033[0m" << endl;
         sendACK(socket, msgCounter);
     }
+}
 
+bool fileExists(string fileName) {
+    ifstream file(fileName);
+    return file.good();
 }

@@ -49,4 +49,6 @@ void receiveOneFile(int socket, char sock[], int &msgCounter);
 
 void receiveGroupOfFiles(int socket, char sock[], int &msgCounter);
 
+bool fileExists(string fileName);
+
 #endif

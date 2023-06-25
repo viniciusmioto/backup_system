@@ -30,9 +30,8 @@ int main() {
             string fileName;
             cout << "\033[1;36m file name > \033[0m";
             cin >> fileName;
-
+  
             sendOneFile(socket, fileName, msgCounter);
-
             break;
         }
         case 1: {
@@ -43,7 +42,6 @@ int main() {
             getline(cin >> ws, filesPattern);
 
             sendGroupOfFiles(socket, filesPattern, msgCounter);
-
             break;
         }
         case EXIT:

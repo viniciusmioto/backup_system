@@ -73,7 +73,7 @@ int waitForACK(int socket, int msgCounter) {
         // receive messages from server: waiting for ACK
         recv(socket, &recvMessage, MAX_DATA_SIZE, 0);
 #ifdef DEBUG
-        cout << "\033[0;33m Waiting for ACK " << msgCounter << "\033[0m" << endl;
+        cout << "\033[0;31m Waiting for ACK " << msgCounter << "\033[0m" << endl;
 #endif
 
         // check if it is the ACK that we are waiting for
