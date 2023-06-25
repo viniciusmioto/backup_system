@@ -2,10 +2,12 @@
 
 using namespace std;
 
+int msgCounter = 0;
+
 int main() {
     // interface de rede eno1 (dois computadores)
     const char *interface = "lo";
-    int socket = ConexaoRawSocket(interface);
+    int socket = RawSocketConnection(interface);
 
     if (socket < 0) {
         cerr << "\033[0;35m ### ERROR: Could not connect to socket. \033[0m\n";
@@ -29,7 +31,7 @@ int main() {
             cout << "\033[1;36m file name > \033[0m";
             cin >> fileName;
 
-            sendOneFile(socket, fileName);
+            sendOneFile(socket, fileName, msgCounter);
 
             break;
         }
@@ -40,7 +42,7 @@ int main() {
             // user input patterns from the console, "*.txt" for example
             getline(cin >> ws, filesPattern);
 
-            sendGroupOfFiles(socket, filesPattern);
+            sendGroupOfFiles(socket, filesPattern, msgCounter);
 
             break;
         }

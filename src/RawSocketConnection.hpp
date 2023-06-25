@@ -19,6 +19,6 @@ using namespace std;
     * \param device
     * \return int with socket descriptor
 */
-int ConexaoRawSocket(const char *device);
+int RawSocketConnection(const char *device);
 
 #endif

@@ -17,7 +17,7 @@ void sendFileData(int socket, string fileName, int &msgCounter);
  * \param socket: socket to send the file
  * \param fileName: name of the file to be sent
  */
-void sendOneFile(int socket, string fileName);
+void sendOneFile(int socket, string fileName, int &msgCounter);
 
 /*!
  * \brief Gets the glob results from the pattern
@@ -41,12 +41,12 @@ vector<string> getGroupOfFiles(string filesPattern);
  * \param filesPatterns: patterns to be searched separated by space;
  * example: "*.txt *.pdf myFile.png"
  */
-void sendGroupOfFiles(int socket, string filesPatterns);
+void sendGroupOfFiles(int socket, string filesPatterns, int &msgCounter);
 
 string getFileName(int socket, char sock[], Message recvMessage, int &msgCounter);
 
-void receiveOneFile(int socket, char sock[], int &msgCounter, string &fileName);
+void receiveOneFile(int socket, char sock[], int &msgCounter);
 
-void receiveGroupOfFiles(int socket, char sock[], int &msgCounter, string &fileName);
+void receiveGroupOfFiles(int socket, char sock[], int &msgCounter);
 
 #endif

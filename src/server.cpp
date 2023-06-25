@@ -12,7 +12,7 @@ int main() {
 
     // network interface eno1 (two computers)
     char sock[] = "lo";
-    int socket = ConexaoRawSocket(sock);
+    int socket = RawSocketConnection(sock);
     unsigned int parity = 0;
     string fileName;
     Message recvMessage;
@@ -23,8 +23,7 @@ int main() {
     }
 
     while (1) {
-        if (msgCounter > MAX_DATA_SIZE)
-            msgCounter = 0;
+        adjustMsgCounter(&msgCounter);
 
         // receive the recvMessage from the client (TYPE)
         recv(socket, &recvMessage, MAX_SIZE, 0); // waiting for option
@@ -40,7 +39,16 @@ int main() {
 #endif
                     sendACK(socket, msgCounter);
                     msgCounter++;
-                    receiveOneFile(socket, sock, msgCounter, fileName);
+                    receiveOneFile(socket, sock, msgCounter);
+                    break;
+
+                case BACKUP_GROUP_OF_FILES:
+#ifdef DEBUG
+                    cout << "BACKUP_GROUP_OF_FILES" << endl;
+#endif
+                    sendACK(socket, msgCounter);
+                    msgCounter++;
+                    receiveGroupOfFiles(socket, sock, msgCounter);
                     break;
 
                 default:
