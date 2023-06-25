@@ -69,6 +69,10 @@ int main() {
             cout << getCurrentDirectory() << endl;
             break;
         }
+        case 7: {
+            getServerWorkingDirectory(socket, msgCounter);
+            break;
+        }
         case EXIT:
             exit(0);
             break;
