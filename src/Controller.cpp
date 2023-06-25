@@ -44,7 +44,7 @@ void sendFile(int socket, string fileName, int &msgCounter) {
 
 void sendOneFile(int socket, string fileName, int &msgCounter) {
     if (!fileExists(fileName)) {
-        cerr << "\033[0;35m ### ERROR: File does not exist. \033[0m" << endl;
+        cout << "\033[0;33m Warning: File does not exist. \033[0m" << endl;
         return;
     }
 
@@ -97,7 +97,7 @@ void sendGroupOfFiles(int socket, string filesPattern, int &msgCounter) {
     vector<string> files = getGroupOfFiles(filesPattern);
 
     if (files.empty()) {
-        cout << "No files matched to input." << endl;
+        cout << "\033[0;33m Warning: No file was found \033[0m" << endl;
         return;
     } else {
         Message backupGroupMsg(sizeof(""), msgCounter, BACKUP_GROUP_OF_FILES, (unsigned char *)"", 0);
@@ -116,14 +116,14 @@ void sendGroupOfFiles(int socket, string filesPattern, int &msgCounter) {
     }
 }
 
-string getFileName(int socket, char sock[], Message recvMessage, int &msgCounter) {
+string getFileName(int socket, char interface[], Message recvMessage, int &msgCounter) {
     string fileName;
 
     // get original file name
     fileName = (char *)(recvMessage.data);
 
     // if is in loopback interface, insert a 'b' in the beginning
-    if (strcmp(sock, "lo") == 0)
+    if (strcmp(interface, "lo") == 0)
         fileName.insert(0, 1, 'b');
 
     write_to_file(fileName, NULL, false, 0);
@@ -131,7 +131,7 @@ string getFileName(int socket, char sock[], Message recvMessage, int &msgCounter
     return fileName;
 }
 
-void receiveOneFile(int socket, char sock[], int &msgCounter) {
+void receiveOneFile(int socket, char interface[], int &msgCounter) {
     Message recvMessage;
     string fileName;
 
@@ -145,7 +145,7 @@ void receiveOneFile(int socket, char sock[], int &msgCounter) {
             if (recvMessage.type == FILE_NAME) {
                 sendACK(socket, msgCounter);
                 // get original file name
-                fileName = getFileName(socket, sock, recvMessage, msgCounter);
+                fileName = getFileName(socket, interface, recvMessage, msgCounter);
                 cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
 
                 msgCounter++;
@@ -172,7 +172,7 @@ void receiveOneFile(int socket, char sock[], int &msgCounter) {
     }
 }
 
-void receiveGroupOfFiles(int socket, char sock[], int &msgCounter) {
+void receiveGroupOfFiles(int socket, char interface[], int &msgCounter) {
     Message recvMessage;
     string fileName;
 
@@ -186,7 +186,7 @@ void receiveGroupOfFiles(int socket, char sock[], int &msgCounter) {
             if (recvMessage.type == FILE_NAME) {
                 sendACK(socket, msgCounter);
                 // get original file name
-                fileName = getFileName(socket, sock, recvMessage, msgCounter);
+                fileName = getFileName(socket, interface, recvMessage, msgCounter);
                 cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
 
                 msgCounter++;
@@ -219,4 +219,14 @@ void receiveGroupOfFiles(int socket, char sock[], int &msgCounter) {
 bool fileExists(string fileName) {
     ifstream file(fileName);
     return file.good();
+}
+
+bool changeDirectory(const string& path) {
+    if (chdir(path.c_str()) == 0) {
+        cout << "Current directory changed to: " << path << endl;
+        return true;
+    } else {
+        cerr << "\033[0;35m ### ERROR: Could not Change Directory \033[0m" << path << endl;
+        return false;
+    }
 }

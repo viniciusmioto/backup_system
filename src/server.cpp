@@ -11,8 +11,8 @@ int main() {
 #endif
 
     // network interface eno1 (two computers)
-    char sock[] = "lo";
-    int socket = RawSocketConnection(sock);
+    char interface[] = "lo";
+    int socket = RawSocketConnection(interface);
     unsigned int parity = 0;
     string fileName;
     Message recvMessage;
@@ -39,7 +39,7 @@ int main() {
 #endif
                     sendACK(socket, msgCounter);
                     msgCounter++;
-                    receiveOneFile(socket, sock, msgCounter);
+                    receiveOneFile(socket, interface, msgCounter);
                     break;
 
                 case BACKUP_GROUP_OF_FILES:
@@ -48,7 +48,7 @@ int main() {
 #endif
                     sendACK(socket, msgCounter);
                     msgCounter++;
-                    receiveGroupOfFiles(socket, sock, msgCounter);
+                    receiveGroupOfFiles(socket, interface, msgCounter);
                     break;
 
                 default:

@@ -43,12 +43,45 @@ vector<string> getGroupOfFiles(string filesPattern);
  */
 void sendGroupOfFiles(int socket, string filesPatterns, int &msgCounter);
 
-string getFileName(int socket, char sock[], Message recvMessage, int &msgCounter);
+/*!
+ * \brief Receives the file name from the socket
+ * \param socket: socket to receive the file
+ * \param interface: network interface
+ * \param recvMessage: message received
+ * \param msgCounter: sequence number of the message
+ * \return file name
+ */
+string getFileName(int socket, char interface[], Message recvMessage, int &msgCounter);
 
-void receiveOneFile(int socket, char sock[], int &msgCounter);
+/*!
+ * \brief Receives one from the socket
+ * \param socket: socket to receive the file
+ * \param interface: network interface
+ * \param recvMessage: message received
+ * \param msgCounter: sequence number of the message
+ */
+void receiveOneFile(int socket, char interface[], int &msgCounter);
 
-void receiveGroupOfFiles(int socket, char sock[], int &msgCounter);
+/*!
+ * \brief Receives a group of files from the socket
+ * \param socket: socket to receive the files
+ * \param interface: network interface
+ * \param msgCounter: sequence number of the message
+ */
+void receiveGroupOfFiles(int socket, char interface[], int &msgCounter);
 
+/*!
+ * \brief Checks if the file exists
+ * \param fileName: name of the file
+ * \return true if the file exists, false otherwise
+ */
 bool fileExists(string fileName);
+
+/*!
+ * \brief Changes the current directory to the path
+ * \param path: path of the directory
+ * \return true if the directory exists, false otherwise
+ */
+bool changeDirectory(const string &path);
 
 #endif

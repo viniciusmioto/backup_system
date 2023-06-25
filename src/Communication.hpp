@@ -13,7 +13,7 @@ typedef enum {
     END_FILE = 9,
     END_GROUP_OF_FILES = 10,
     DATA = 11,
-    ERRO = 12,
+    ERROR = 12,
     OK = 13,
     ACK = 14,
     NACK = 15,
