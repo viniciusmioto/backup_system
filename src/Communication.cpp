@@ -123,11 +123,12 @@ int waitForACK(int socket, int msgCounter) {
     return -1;
 }
 
-void guaranteeSend(int socket, Message message, int msgCounter) {
+bool guaranteeSend(int socket, Message message, int msgCounter) {
     int attempts = 0;
+    int result = waitForACK(socket, msgCounter);
 
     // send message and wait for ACK
-    while (waitForACK(socket, msgCounter) != ACK && waitForACK(socket, msgCounter) != ERROR) {
+    while (result != ACK && result != ERROR) {
 
 #ifdef DEBUG
         cout << "\033[0;33m -> Trying to send again... " << attempts << "º attempt\033[0m" << endl;
@@ -140,9 +141,16 @@ void guaranteeSend(int socket, Message message, int msgCounter) {
 #ifdef DEBUG
             cerr << "\033[0;35m ### ERROR: Could not send file name. \033[0m" << endl;
 #endif
-            exit(1);
+            return false;
         }
+
+        result = waitForACK(socket, msgCounter);
+
     }
+    if (result == ERROR)
+        return false;
+    
+    return true;
 }
 
 void adjustMsgCounter(int *msgCounter) {

@@ -30,10 +30,9 @@ void sendFile(int socket, string fileName, int &msgCounter) {
     sendMessage(socket, fileNameMsg);
     guaranteeSend(socket, fileNameMsg, msgCounter);
     msgCounter++;
+    adjustMsgCounter(&msgCounter);
 
     sendFileData(socket, fileName, msgCounter);
-
-    adjustMsgCounter(&msgCounter);
 
     // send last message to inform that the whole file was sent
     Message endFileMsg(sizeof(""), msgCounter, END_FILE, (unsigned char *)"", 0);
@@ -116,6 +115,8 @@ void sendGroupOfFiles(int socket, string filesPattern, int &msgCounter) {
         Message endGroupOfFilesMsg(sizeof(""), msgCounter, END_GROUP_OF_FILES, (unsigned char *)"", 0);
         sendMessage(socket, endGroupOfFilesMsg);
         guaranteeSend(socket, endGroupOfFilesMsg, msgCounter);
+        msgCounter++;
+        adjustMsgCounter(&msgCounter);
     }
 }
 
@@ -258,7 +259,10 @@ void sendServerDirectory(int socket, string path, int &msgCounter) {
     memcpy(&chooseDirMsg.data, path.c_str(), sizeof(chooseDirMsg.data));
 
     sendMessage(socket, chooseDirMsg);
-    guaranteeSend(socket, chooseDirMsg, msgCounter);
+    if (guaranteeSend(socket, chooseDirMsg, msgCounter)) 
+        cout << "SERVER_DIR: changed to " << path << endl;
+    else 
+        cout << "\033[0;33m Warning SERVER_DIR: failed to change \033[0m" << endl;
     msgCounter++;
     adjustMsgCounter(&msgCounter);
 }

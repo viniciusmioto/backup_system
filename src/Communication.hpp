@@ -80,8 +80,9 @@ int waitForACK(int socket, int msgCounter);
  * \param socket
  * \param message: message to be sent
  * \param msgCounter: message sequence number
+ * \return true if success, false if error
  */
-void guaranteeSend(int socket, Message message, int msgCounter);
+bool guaranteeSend(int socket, Message message, int msgCounter);
 
 /*!
  * \brief Adjusts the message counter, max value is 63
