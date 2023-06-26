@@ -12,6 +12,7 @@
 #include <openssl/md5.h>
 #include <glob.h>
 #include <openssl/evp.h>
+#include <unistd.h>
 
 #include "RawSocketConnection.hpp"
 

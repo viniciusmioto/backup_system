@@ -61,7 +61,6 @@ void sendOneFile(int socket, string fileName, int &msgCounter) {
     sendFile(socket, fileName, msgCounter);
 }
 
-
 void sendGroupOfFiles(int socket, string filesPattern, int &msgCounter) {
     vector<string> files = getGroupOfFiles(filesPattern);
 
@@ -202,12 +201,12 @@ void receiveGroupOfFiles(int socket, char interface[], int &msgCounter) {
 
 string getCurrentDirectory() {
     char buffer[PATH_MAX];
-    if (getcwd(buffer, sizeof(buffer)) != NULL) {
+    if (getcwd(buffer, sizeof(buffer)) != NULL)
         return string(buffer);
-    } else {
+    else
         cerr << "Failed to get the current directory." << endl;
-        return "";
-    }
+
+    return "";
 }
 
 bool changeDirectory(const string &path) {
