@@ -280,17 +280,15 @@ void receiveServerDirectory(int socket, Message recvMessage, int &msgCounter) {
 }
 
 void getServerWorkingDirectory(int socket, int &msgCounter) {
-    Message getServerDirMsg(sizeof(""), msgCounter, OK, (unsigned char *)"", 0);
+    Message getServerDirMsg(sizeof(""), msgCounter, SERVER_PWD, (unsigned char *)"", 0);
 
     sendMessage(socket, getServerDirMsg);
 
     Message recvMessage;
-    while (recvMessage.initMarker != INIT_MARKER || recvMessage.type != OK || recvMessage.sequence != msgCounter + 1) {
+    while (recvMessage.initMarker != INIT_MARKER || recvMessage.type != SERVER_PWD || recvMessage.sequence != msgCounter + 1) {
         recv(socket, &recvMessage, MAX_SIZE, 0);
-
-        cout << recvMessage.data << endl;
     }
-    if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == OK && recvMessage.data != NULL) {
+    if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == SERVER_PWD && recvMessage.data != NULL) {
         cout << " SERVER_DIR: " << recvMessage.data << endl;
         msgCounter++;
         adjustMsgCounter(&msgCounter);
@@ -301,7 +299,7 @@ void getServerWorkingDirectory(int socket, int &msgCounter) {
 }
 
 void sendServerWorkingDirectory(int socket, int &msgCounter) {
-    Message currentServerDirMsg(sizeof(""), msgCounter, OK, (unsigned char *)"", 0);
+    Message currentServerDirMsg(sizeof(""), msgCounter, SERVER_PWD, (unsigned char *)"", 0);
     string serverDir = getCurrentDirectory();
     memcpy(&currentServerDirMsg.data, serverDir.c_str(), sizeof(currentServerDirMsg.data));
 
