@@ -61,42 +61,6 @@ void sendOneFile(int socket, string fileName, int &msgCounter) {
     sendFile(socket, fileName, msgCounter);
 }
 
-vector<string> getGlobResults(string pattern) {
-    vector<string> results;
-
-    glob_t globResult;
-    int globStatus = glob(pattern.c_str(), GLOB_TILDE, nullptr, &globResult);
-
-    if (globStatus == 0) {
-        // iterate over the matched file paths and add them to the results vector
-        for (size_t i = 0; i < globResult.gl_pathc; ++i) {
-            results.push_back(globResult.gl_pathv[i]);
-        }
-    }
-
-    // free the memory allocated by glob() by calling globfree()
-    globfree(&globResult);
-
-    return results;
-}
-
-vector<string> getGroupOfFiles(string filePatterns) {
-    vector<string> matched_files;
-
-    istringstream iss(filePatterns);
-    string pattern;
-
-    // process each pattern individually
-    while (iss >> pattern) {
-        // call the getGlobResults function to get the matching file paths for each pattern
-        vector<string> patternResults = getGlobResults(pattern);
-
-        // append the pattern matched_files to the overall matched_files vector
-        matched_files.insert(matched_files.end(), patternResults.begin(), patternResults.end());
-    }
-
-    return matched_files;
-}
 
 void sendGroupOfFiles(int socket, string filesPattern, int &msgCounter) {
     vector<string> files = getGroupOfFiles(filesPattern);
@@ -129,15 +93,11 @@ void sendGroupOfFiles(int socket, string filesPattern, int &msgCounter) {
     }
 }
 
-string getFileName(int socket, char interface[], Message recvMessage, int &msgCounter) {
+string getFileName(char interface[], Message recvMessage) {
     string fileName;
 
     // get original file name
     fileName = (char *)(recvMessage.data);
-
-    // if is in loopback interface, insert a 'b' in the beginning
-    if (strcmp(interface, "lo") == 0)
-        fileName.insert(0, 1, 'b');
 
     write_to_file(fileName, NULL, false, 0);
 
@@ -158,7 +118,7 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
             if (recvMessage.type == FILE_NAME) {
                 sendACK(socket, msgCounter);
                 // get original file name
-                fileName = getFileName(socket, interface, recvMessage, msgCounter);
+                fileName = getFileName(interface, recvMessage);
                 cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
 
                 msgCounter++;
@@ -204,7 +164,7 @@ void receiveGroupOfFiles(int socket, char interface[], int &msgCounter) {
             if (recvMessage.type == FILE_NAME) {
                 sendACK(socket, msgCounter);
                 // get original file name
-                fileName = getFileName(socket, interface, recvMessage, msgCounter);
+                fileName = getFileName(interface, recvMessage);
                 cout << "\033[0;32m backup: " << fileName << " started...\033[0m" << endl;
 
                 msgCounter++;
@@ -238,11 +198,6 @@ void receiveGroupOfFiles(int socket, char interface[], int &msgCounter) {
         msgCounter++;
         adjustMsgCounter(&msgCounter);
     }
-}
-
-bool fileExists(string fileName) {
-    ifstream file(fileName);
-    return file.good();
 }
 
 string getCurrentDirectory() {
@@ -395,73 +350,6 @@ void restoreGroupOfFiles(int socket, char *interface, string filesPattern, int &
     }
 }
 
-string calculateMD5(string filename) {
-    ifstream file(filename, ios::binary); // Open the file in binary mode
-
-    // Check if the file was successfully opened
-    if (!file) {
-        cerr << "Error opening file: " << filename << endl;
-        return "";
-    }
-
-    MD5_CTX md5Context;    // Create an MD5 context structure
-    MD5_Init(&md5Context); // Initialize the MD5 context
-
-    // Define the buffer size for reading the file
-    constexpr int bufferSize = 1024;
-    // Create a buffer to read file data
-    char buffer[bufferSize];
-
-    // Read the file in chunks
-    while (file.read(buffer, bufferSize))
-        // Update the MD5 context with the chunk of data
-        MD5_Update(&md5Context, buffer, bufferSize);
-
-    // Update the MD5 context with the remaining data
-    MD5_Update(&md5Context, buffer, file.gcount());
-
-    // Create an array to store the MD5 digest
-    unsigned char digest[MD5_DIGEST_LENGTH];
-    // Finalize the MD5 calculation and store the digest
-    MD5_Final(digest, &md5Context);
-
-    // Create a string stream for converting the digest to a string
-    stringstream ss;
-    // Set the stream to output hexadecimal values and pad with zeroes
-    ss << hex << setfill('0');
-
-    // Iterate over each byte in the digest
-    for (unsigned char byte : digest)
-        // Convert each byte to hexadecimal and append to the string stream
-        ss << setw(2) << static_cast<unsigned int>(byte);
-
-    // convert the string stream to a string
-    // and return the MD5 hash as a hexadecimal string
-    return ss.str();
-}
-
-bool verifyFileIntegrity(string localFileMD5, string serverFileMD5) {
-
-    if (localFileMD5.empty()) {
-        cerr << "\033[0;33m Warning: Unable to calculate MD5 hash of the LOCAL file. \033[0m" << endl;
-        return false;
-    }
-
-    if (serverFileMD5.empty()) {
-        cerr << "\033[0;33m Warning: Unable to calculate MD5 hash of the SERVER file. \033[0m" << endl;
-        return false;
-    }
-
-    // Compare the MD5 hashes
-    if (localFileMD5 == serverFileMD5) {
-        cout << "\033[0;32m  The files have the same MD5 hash. Integrity verified. \033[0m" << endl;
-        return true;
-    } else {
-        cout << "\033[0;33m Warning: The files have different MD5 hashes. Integrity verification failed. \033[0m" << endl;
-        return false;
-    }
-}
-
 void verifyBackup(int socket, string fileName, int &msgCounter) {
     Message verifyBackupMsg(sizeof(""), msgCounter, VERIFY_BACKUP, (unsigned char *)"", 0);
     memcpy(&verifyBackupMsg.data, fileName.c_str(), sizeof(verifyBackupMsg.data));
@@ -487,10 +375,6 @@ void verifyBackup(int socket, string fileName, int &msgCounter) {
 }
 
 void sendVerifyBackup(int socket, char *interface, string fileName, int &msgCounter) {
-    // if loopback, then add 'b' int the beginning fileName
-    if (strcmp(interface, "lo") == 0)
-        fileName.insert(0, 1, 'b');
-
     Message backupMD5Msg(sizeof(""), msgCounter, FILE_MD5, (unsigned char *)"", 0);
     string backupMD5 = calculateMD5(fileName);
     memcpy(&backupMD5Msg.data, backupMD5.c_str(), sizeof(backupMD5Msg.data));

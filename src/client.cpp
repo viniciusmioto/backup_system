@@ -5,6 +5,11 @@ using namespace std;
 int msgCounter = 0;
 
 int main() {
+
+#ifdef DEBUG
+    cout << "DEBUG MODE" << endl;
+#endif
+
     // network interface eno1 (two computers)
     char interface[] = "lo";
     int socket = RawSocketConnection(interface);
@@ -37,7 +42,7 @@ int main() {
             string fileName;
             cout << "\033[1;36m file name > \033[0m";
             cin >> fileName;
-  
+
             sendOneFile(socket, fileName, msgCounter);
             break;
         }
