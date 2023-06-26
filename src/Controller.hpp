@@ -2,9 +2,6 @@
 #define CONTROLLER_H
 
 #include "Communication.hpp"
-#include <glob.h>
-#include <iomanip>
-#include <openssl/md5.h>
 
 /*!
  * \brief Sends the file data to the socket
@@ -21,21 +18,6 @@ void sendFileData(int socket, string fileName, int &msgCounter);
  */
 void sendOneFile(int socket, string fileName, int &msgCounter);
 
-/*!
- * \brief Gets the glob results from the pattern
- * \param pattern: one pattern to be searched;
- * example: "*.txt"
- * \return vector of strings with the results (file names)
- */
-vector<string> getGlobResults(string pattern);
-
-/*!
- * \brief Gets the group of files from the patterns
- * \param filesPattern: patterns to be searched separated by space;
- * example: "*.txt *.pdf *.png"
- * \return vector of strings with the results (file names)
- */
-vector<string> getGroupOfFiles(string filesPattern);
 
 /*!
  * \brief Sends a group of files to the socket
@@ -46,14 +28,12 @@ vector<string> getGroupOfFiles(string filesPattern);
 void sendGroupOfFiles(int socket, string filesPatterns, int &msgCounter);
 
 /*!
- * \brief Receives the file name from the socket
- * \param socket: socket to receive the file
+ * \brief Receives the file name and open file to write (overwrite)
  * \param interface: network interface
  * \param recvMessage: message received
- * \param msgCounter: sequence number of the message
  * \return file name
  */
-string getFileName(int socket, char interface[], Message recvMessage, int &msgCounter);
+string getFileName(char interface[], Message recvMessage);
 
 /*!
  * \brief Receives one from the socket
@@ -71,13 +51,6 @@ void receiveOneFile(int socket, char interface[], int &msgCounter);
  * \param msgCounter: sequence number of the message
  */
 void receiveGroupOfFiles(int socket, char interface[], int &msgCounter);
-
-/*!
- * \brief Checks if the file exists
- * \param fileName: name of the file
- * \return true if the file exists, false otherwise
- */
-bool fileExists(string fileName);
 
 /*!
  * \brief Gets the current directory
@@ -140,21 +113,6 @@ void restoreOneFile(int socket, char interface[], string fileName, int &msgCount
  * \param msgCounter: sequence number of the message
  */
 void restoreGroupOfFiles(int socket, char *interface, string filesPattern, int &msgCounter);
-
-/*!
- * \brief Calculates the MD5 of the file
- * \param filename: name of the file
- * \return MD5 hash of the file
- */
-string calculateMD5(string filename);
-
-/*!
- * \brief Verifies the integrity of the file (MD5)
- * \param localFile: name of the local file
- * \param serverFile: name of the server file
- * \return true if the files are equal, false otherwise
- */
-bool verifyFileIntegrity(string localFile, string serverFile);
 
 void verifyBackup(int socket, string fileName, int &msgCounter);
 
