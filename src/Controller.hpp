@@ -3,6 +3,8 @@
 
 #include "Communication.hpp"
 #include <glob.h>
+#include <iomanip>
+#include <openssl/md5.h>
 
 /*!
  * \brief Sends the file data to the socket
@@ -129,6 +131,33 @@ void sendServerWorkingDirectory(int socket, int &msgCounter);
  */
 void restoreOneFile(int socket, char interface[], string fileName, int &msgCounter);
 
-void restoreGroupOfFiles(int socket, char* interface, string filesPattern, int &msgCounter);
+/*!
+ * \brief Receive group of files from the server
+ * \param socket: socket to receive the files
+ * \param interface: network interface
+ * \param filesPattern: patterns to be searched separated by space;
+ * example: "*.txt *.pdf myFile.png"
+ * \param msgCounter: sequence number of the message
+ */
+void restoreGroupOfFiles(int socket, char *interface, string filesPattern, int &msgCounter);
+
+/*!
+ * \brief Calculates the MD5 of the file
+ * \param filename: name of the file
+ * \return MD5 hash of the file
+ */
+string calculateMD5(string filename);
+
+/*!
+ * \brief Verifies the integrity of the file (MD5)
+ * \param localFile: name of the local file
+ * \param serverFile: name of the server file
+ * \return true if the files are equal, false otherwise
+ */
+bool verifyFileIntegrity(string localFile, string serverFile);
+
+void verifyBackup(int socket, string fileName, int &msgCounter);
+
+void sendVerifyBackup(int socket, char *interface, string fileName, int &msgCounter);
 
 #endif

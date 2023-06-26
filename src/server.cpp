@@ -80,6 +80,13 @@ int main() {
                     sendServerWorkingDirectory(socket, msgCounter);
                     break;
 
+                case VERIFY_BACKUP:
+                    cout << "...VERIFY_BACKUP" << endl;
+                    msgCounter++;
+                    adjustMsgCounter(&msgCounter);
+                    sendVerifyBackup(socket, interface, string(reinterpret_cast<const char*>(recvMessage.data)), msgCounter);
+                    break;
+
                 default:
                     break;
                 }
