@@ -50,6 +50,15 @@ int main() {
                     receiveGroupOfFiles(socket, interface, msgCounter);
                     break;
 
+                case RESTORE_ONE_FILE:
+                    cout << "...RESTORE_ONE_FILE" << endl;
+                    sendACK(socket, msgCounter);
+                    msgCounter++;
+                    adjustMsgCounter(&msgCounter);
+                    cout << " restore " << recvMessage.data << endl;
+                    sendOneFile(socket, string(reinterpret_cast<const char*>(recvMessage.data)), msgCounter);
+                    break;
+
                 case SERVER_DIR:
                     cout << "...SERVER_DIR" << endl;
                     receiveServerDirectory(socket, recvMessage, msgCounter);
@@ -61,6 +70,7 @@ int main() {
                     adjustMsgCounter(&msgCounter);
                     sendServerWorkingDirectory(socket, msgCounter);
                     break;
+
                 default:
                     break;
                 }

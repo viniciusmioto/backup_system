@@ -120,4 +120,13 @@ void getServerWorkingDirectory(int socket, int &msgCounter);
  */
 void sendServerWorkingDirectory(int socket, int &msgCounter);
 
+/*!
+ * \brief Receive file from the server
+ * \param socket: socket to receive the file
+ * \param interface: network interface
+ * \param fileName: name of the file to restore
+ * \param msgCounter: sequence number of the message
+ */
+void restoreOneFile(int socket, char interface[], string fileName, int &msgCounter);
+
 #endif
