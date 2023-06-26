@@ -6,7 +6,7 @@ int msgCounter = 0;
 
 int main() {
     // network interface eno1 (two computers)
-    const char *interface = "lo";
+    char interface[] = "lo";
     int socket = RawSocketConnection(interface);
 
     if (socket < 0) {
@@ -21,6 +21,8 @@ int main() {
         cout << "\033[1;36m SELECT ONE OPTION" << endl;
         cout << " 0 - Send a File" << endl;
         cout << " 1 - Send Group of Files" << endl;
+        cout << " 2 - Recover a File" << endl;
+        cout << " 3 - Recover Group of Files" << endl;
         cout << " 4 - Server Change Directory S(CD)" << endl;
         cout << " 5 - Local Change Directory L(CD)" << endl;
         cout << " 6 - Print Local Working Directory L(PWD)" << endl;
@@ -46,6 +48,13 @@ int main() {
             getline(cin >> ws, filesPattern);
 
             sendGroupOfFiles(socket, filesPattern, msgCounter);
+            break;
+        }
+        case 2: {
+            string fileName;
+            cout << "\033[1;36m file name > \033[0m";
+            cin >> fileName;
+            restoreOneFile(socket, interface, fileName, msgCounter);
             break;
         }
         case 4: {
