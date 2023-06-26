@@ -99,10 +99,6 @@ string getFileName(char interface[], Message recvMessage) {
     // get original file name
     fileName = (char *)(recvMessage.data);
 
-    // if is in loopback interface, insert a 'b' in the beginning
-    if (strcmp(interface, "lo") == 0)
-        fileName.insert(0, 1, 'b');
-
     write_to_file(fileName, NULL, false, 0);
 
     return fileName;
@@ -379,10 +375,6 @@ void verifyBackup(int socket, string fileName, int &msgCounter) {
 }
 
 void sendVerifyBackup(int socket, char *interface, string fileName, int &msgCounter) {
-    // if loopback, then add 'b' int the beginning fileName
-    if (strcmp(interface, "lo") == 0)
-        fileName.insert(0, 1, 'b');
-
     Message backupMD5Msg(sizeof(""), msgCounter, FILE_MD5, (unsigned char *)"", 0);
     string backupMD5 = calculateMD5(fileName);
     memcpy(&backupMD5Msg.data, backupMD5.c_str(), sizeof(backupMD5Msg.data));

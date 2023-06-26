@@ -2,7 +2,7 @@
 
 using namespace std;
 
-string get_file_content(string fileName, unsigned int startPosition, int fileSize, int* bytesRead) {
+string get_file_content(string fileName, unsigned int startPosition, int fileSize, int *bytesRead) {
     ifstream file(fileName, ios::binary); // Open the file in binary mode
 
     if (file.is_open()) {
@@ -46,54 +46,54 @@ void write_to_file(string fileName, unsigned char data[MAX_DATA_SIZE], bool appe
 
         file.write((const char *)(data), dataSize);
         file.close();
-        
+
     } else {
-        cerr << "\033[0;35m ### ERROR: Could not write file  " << fileName <<".\033[0m" << endl;
+        cerr << "\033[0;35m ### ERROR: Could not write file  " << fileName << ".\033[0m" << endl;
     }
 }
 
 string calculateMD5(string filename) {
-    ifstream file(filename, ios::binary); // Open the file in binary mode
+    std::ifstream file(filename, std::ios::binary); // Open the file in binary mode
 
-    // Check if the file was successfully opened
-    if (!file) {
-        cerr << "Error opening file: " << filename << endl;
+    if (!file) { // Check if the file was successfully opened
+        std::cerr << "Error opening file: " << filename << std::endl;
         return "";
     }
 
-    MD5_CTX md5Context;    // Create an MD5 context structure
-    MD5_Init(&md5Context); // Initialize the MD5 context
+    // Create a new MD5 context
+    EVP_MD_CTX *md5Context = EVP_MD_CTX_new();
+    // Initialize the MD5 context with the MD5 algorithm
+    EVP_DigestInit_ex(md5Context, EVP_md5(), nullptr);
 
-    // Define the buffer size for reading the file
-    constexpr int bufferSize = 1024;
-    // Create a buffer to read file data
-    char buffer[bufferSize];
+    constexpr int bufferSize = 1024; // Define the buffer size for reading the file
+    char buffer[bufferSize];         // Create a buffer to read file data
 
     // Read the file in chunks
     while (file.read(buffer, bufferSize))
         // Update the MD5 context with the chunk of data
-        MD5_Update(&md5Context, buffer, bufferSize);
-
+        EVP_DigestUpdate(md5Context, buffer, bufferSize);
     // Update the MD5 context with the remaining data
-    MD5_Update(&md5Context, buffer, file.gcount());
+    EVP_DigestUpdate(md5Context, buffer, file.gcount());
 
     // Create an array to store the MD5 digest
     unsigned char digest[MD5_DIGEST_LENGTH];
     // Finalize the MD5 calculation and store the digest
-    MD5_Final(digest, &md5Context);
+    EVP_DigestFinal_ex(md5Context, digest, nullptr);
+    // Free the MD5 context
+    EVP_MD_CTX_free(md5Context);
 
     // Create a string stream for converting the digest to a string
-    stringstream ss;
+    std::stringstream ss;
     // Set the stream to output hexadecimal values and pad with zeroes
-    ss << hex << setfill('0');
+    ss << std::hex << std::setfill('0');
 
     // Iterate over each byte in the digest
     for (unsigned char byte : digest)
         // Convert each byte to hexadecimal and append to the string stream
-        ss << setw(2) << static_cast<unsigned int>(byte);
+        ss << std::setw(2) << static_cast<unsigned int>(byte);
 
-    // convert the string stream to a string
-    // and return the MD5 hash as a hexadecimal string
+    // Convert the string stream to a string and
+    // return the MD5 hash as a hexadecimal string
     return ss.str();
 }
 
@@ -160,4 +160,3 @@ vector<string> getGroupOfFiles(string filePatterns) {
 
     return matched_files;
 }
-
