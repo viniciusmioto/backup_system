@@ -8,9 +8,9 @@ debug: CC += $(DEBUG)
 debug: CXX += $(DEBUG)
 debug: all
 
-client: client.o $(OBJECTS)
+client: client.o $(OBJECTS) -lcrypto
 
-server: server.o $(OBJECTS)
+server: server.o $(OBJECTS) -lcrypto
 
 clean:
 	-rm -f *.o

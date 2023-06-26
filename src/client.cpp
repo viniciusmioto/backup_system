@@ -27,6 +27,7 @@ int main() {
         cout << " 5 - Change Server Directory (CD)" << endl;
         cout << " 6 - Print Local Working Directory (PWD)" << endl;
         cout << " 7 - Print Server Working Directory (PWD)" << endl;
+        cout << " 8 - Verify Backup (MD5)" << endl;
         cout << " 9 - Quit" << endl;
         cout << " option > \033[0m";
         cin >> option;
@@ -72,7 +73,7 @@ int main() {
             cout << "\033[1;36m directory name > \033[0m";
             cin >> dirName;
 
-            sendServerDirectory(socket, dirName, msgCounter);
+            changeDirectory(dirName);
             break;
         }
         case 5: {
@@ -80,7 +81,7 @@ int main() {
             cout << "\033[1;36m directory name > \033[0m";
             cin >> dirName;
 
-            changeDirectory(dirName);
+            sendServerDirectory(socket, dirName, msgCounter);
             break;
         }
         case 6: {
@@ -90,6 +91,14 @@ int main() {
         }
         case 7: {
             getServerWorkingDirectory(socket, msgCounter);
+            break;
+        }
+        case 8: {
+            string fileName;
+            cout << "\033[1;36m file name > \033[0m";
+            cin >> fileName;
+
+            verifyBackup(socket, fileName, msgCounter);
             break;
         }
         case EXIT:
