@@ -23,10 +23,10 @@ int main() {
         cout << " 1 - Send Group of Files" << endl;
         cout << " 2 - Recover a File" << endl;
         cout << " 3 - Recover Group of Files" << endl;
-        cout << " 4 - Server Change Directory S(CD)" << endl;
-        cout << " 5 - Local Change Directory L(CD)" << endl;
-        cout << " 6 - Print Local Working Directory L(PWD)" << endl;
-        cout << " 7 - Print Server Working Directory S(PWD)" << endl;
+        cout << " 4 - Change Local Directory (CD)" << endl;
+        cout << " 5 - Change Server Directory (CD)" << endl;
+        cout << " 6 - Print Local Working Directory (PWD)" << endl;
+        cout << " 7 - Print Server Working Directory (PWD)" << endl;
         cout << " 9 - Quit" << endl;
         cout << " option > \033[0m";
         cin >> option;
@@ -55,6 +55,16 @@ int main() {
             cout << "\033[1;36m file name > \033[0m";
             cin >> fileName;
             restoreOneFile(socket, interface, fileName, msgCounter);
+            break;
+        }
+        case 3: {
+            cout << "\033[1;36m patterns > \033[0m";
+
+            string filesPattern;
+            // user input patterns from the console, "*.txt" for example
+            getline(cin >> ws, filesPattern);
+
+            restoreGroupOfFiles(socket, interface, filesPattern, msgCounter);
             break;
         }
         case 4: {

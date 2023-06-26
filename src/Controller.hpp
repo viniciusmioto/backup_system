@@ -129,4 +129,6 @@ void sendServerWorkingDirectory(int socket, int &msgCounter);
  */
 void restoreOneFile(int socket, char interface[], string fileName, int &msgCounter);
 
+void restoreGroupOfFiles(int socket, char* interface, string filesPattern, int &msgCounter);
+
 #endif
