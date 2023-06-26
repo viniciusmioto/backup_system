@@ -349,7 +349,7 @@ void restoreOneFile(int socket, char interface[], string fileName, int &msgCount
     msgCounter++;
     adjustMsgCounter(&msgCounter);
 
-    // receive file name
+    // receive information to backup one file
     Message recvMessage;
     while (recvMessage.initMarker != INIT_MARKER || recvMessage.type != BACKUP_ONE_FILE || recvMessage.sequence != msgCounter) {
         recv(socket, &recvMessage, MAX_SIZE, 0);
@@ -361,5 +361,36 @@ void restoreOneFile(int socket, char interface[], string fileName, int &msgCount
         msgCounter++;
         adjustMsgCounter(&msgCounter);
         receiveOneFile(socket, interface, msgCounter);
+    }
+}
+
+void restoreGroupOfFiles(int socket, char* interface, string filesPattern, int &msgCounter) {
+    // send to server that we want to restore a group of files
+    Message recoverGroupOfFilesMsg(sizeof(""), msgCounter, RESTORE_GROUP_OF_FILES, (unsigned char *)"", 0);
+    memcpy(&recoverGroupOfFilesMsg.data, filesPattern.c_str(), sizeof(recoverGroupOfFilesMsg.data));
+    sendMessage(socket, recoverGroupOfFilesMsg);
+
+    // check if server received the message
+    if (guaranteeSend(socket, recoverGroupOfFilesMsg, msgCounter))
+        cout << " RESTORE_GROUP_OF_FILES: " << filesPattern << " started...\033[0m" << endl;
+    else {
+        cout << "\033[0;33m Warning RESTORE_GROUP_OF_FILES: failed to ask server \033[0m" << endl;
+        return;
+    }
+    msgCounter++;
+    adjustMsgCounter(&msgCounter);
+
+    // receive information to backup group of files
+    Message recvMessage;
+    while (recvMessage.initMarker != INIT_MARKER || recvMessage.type != BACKUP_GROUP_OF_FILES || recvMessage.sequence != msgCounter) {
+        recv(socket, &recvMessage, MAX_SIZE, 0);
+    }
+
+    // receive file data and write to file
+    if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == BACKUP_GROUP_OF_FILES && recvMessage.data != NULL) {
+        sendACK(socket, msgCounter);
+        msgCounter++;
+        adjustMsgCounter(&msgCounter);
+        receiveGroupOfFiles(socket, interface, msgCounter);
     }
 }
