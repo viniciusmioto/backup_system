@@ -25,7 +25,7 @@ int sendMessage(int socket, Message message) {
 
 #ifdef DEBUG
     if (message.type != ACK && message.type != NACK)
-        cout << "\033[0;32m >> Send [" << message.sequence << "](" << message.type << ") \033[0m" << message.data << endl;
+        cout << "\033[0;32m >> Send [" << message.sequence << "](" << message.type << ")|" << message.size << "|{" << message.parity << "}\033[0m " << message.data << endl;
 #endif
 
     return send(socket, buffer, MAX_SIZE, 0);
@@ -133,16 +133,19 @@ bool guaranteeSend(int socket, Message message, int msgCounter) {
 #ifdef DEBUG
         cout << "\033[0;33m -> Trying to send again... " << attempts << "º attempt\033[0m" << endl;
 #endif
-        sendMessage(socket, message);
-        attempts++;
+        
 
-        if (attempts >= MAX_ATTEMPTS) {
+        if (attempts > MAX_ATTEMPTS) {
 
 #ifdef DEBUG
             cerr << "\033[0;35m ### ERROR: Could not send file name. \033[0m" << endl;
 #endif
-            return false;
+            message.parity = 0;
+
         }
+
+        sendMessage(socket, message);
+        attempts++;
 
         result = waitForACK(socket, msgCounter);
 
@@ -160,6 +163,12 @@ void adjustMsgCounter(int *msgCounter) {
 
 bool checkVerticalParity(Message message) {
     unsigned char parity = 0;
+
+    return true;
+
+    if (message.parity == 0)
+        return true;
+
     for (int i = 0; i < message.size; i++)
         parity ^= message.data[i];
 

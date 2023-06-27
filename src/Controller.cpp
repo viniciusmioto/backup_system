@@ -110,6 +110,10 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
     while (recvMessage.type != END_FILE) {
         recv(socket, &recvMessage, MAX_SIZE, 0);
 
+#ifdef DEBUG
+        cout << "\033[0;31m Waiting for msg " << msgCounter << "\033[0m" << endl;
+#endif
+
         adjustMsgCounter(&msgCounter);
 
         if (recvMessage.initMarker == INIT_MARKER && recvMessage.sequence == msgCounter) {
