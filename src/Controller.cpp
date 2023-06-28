@@ -115,6 +115,7 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
 
 #ifdef DEBUG
         cout << "\033[0;31m Waiting for msg " << msgCounter << "\033[0m" << endl;
+        cout << "\033[0;31m Received " << recvMessage.sequence << "\033[0m" << endl;
 #endif
 
         adjustMsgCounter(&msgCounter);
@@ -170,6 +171,11 @@ void receiveGroupOfFiles(int socket, char interface[], int &msgCounter) {
         recv(socket, &recvMessage, MAX_SIZE, 0);
         if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_GROUP_OF_FILES)
             break;
+
+#ifdef DEBUG
+        cout << "\033[0;31m Waiting for msg " << msgCounter << "\033[0m" << endl;
+        cout << "\033[0;31m Received " << recvMessage.sequence << "\033[0m" << endl;
+#endif
 
         adjustMsgCounter(&msgCounter);
 
