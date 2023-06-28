@@ -15,7 +15,13 @@ void sendFileData(int socket, string fileName, int &msgCounter) {
         // mount package with full data capacity and send it
         Message packageMsg;
         mountPackage(&fileSize, fileName, &filePosition, fileContent, packageMsg, msgCounter, &bytesRead);
+        cout << "before mask" << endl;
+        for (int i = 0; i < packageMsg.size; i++)
+            cout << static_cast<int>(packageMsg.data[i]) << " "; // Print the byte as an integer
+        cout << " " << endl;
+
         maskMessage(packageMsg);
+        cout << "after: " << endl;
         sendMessage(socket, packageMsg);
 
         // check if the message was received
@@ -132,10 +138,13 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
                 size_t size = recvMessage.size;
 
                 unmaskMessage(recvMessage);
-                
+                for (int i = 0; i < recvMessage.size; i++)
+                    cout << static_cast<int>(recvMessage.data[i]) << " "; // Print the byte as an integer
+                cout << " " << endl;
+
                 // parity check: ACK or NACK
                 if (checkVerticalParity(recvMessage)) {
-                    
+
                     write_to_file(fileName, recvMessage.data, true, size);
                     sendACK(socket, msgCounter);
                     msgCounter++;

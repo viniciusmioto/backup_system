@@ -14,6 +14,7 @@ using namespace std;
 
 class Message {
 public:
+    unsigned int ethernetHeader[14];
     unsigned int initMarker : 8;
     unsigned int size : 6;
     unsigned int sequence : 6;

@@ -24,8 +24,12 @@ int sendMessage(int socket, Message message) {
     memcpy(buffer, &message, MAX_SIZE);
 
 #ifdef DEBUG
-    if (message.type != ACK && message.type != NACK)
-        cout << "\033[0;32m >> Send [" << message.sequence << "](" << message.type << ")|" << message.size << "|{" << message.parity << "}\033[0m " << message.data << endl;
+    if (message.type != ACK && message.type != NACK) {
+        cout << "\033[0;32m >> Send [" << message.sequence << "](" << message.type << ")|" << message.size << "|{" << message.parity << "}\033[0m " << endl;
+        for (int i = 0; i < message.size; i++)
+            cout << static_cast<int>(message.data[i]) << " "; // Print the byte as an integer
+    }
+
 #endif
 
     return send(socket, buffer, MAX_SIZE, 0);
@@ -133,26 +137,23 @@ bool guaranteeSend(int socket, Message message, int msgCounter) {
 #ifdef DEBUG
         cout << "\033[0;33m -> Trying to send again... " << attempts << "º attempt\033[0m" << endl;
 #endif
-        
 
         if (attempts > MAX_ATTEMPTS) {
 
 #ifdef DEBUG
             cerr << "\033[0;35m ### ERROR: Could not send file name. \033[0m" << endl;
 #endif
-            message.parity = 0;
-
+            // message.parity = 0;
         }
 
         sendMessage(socket, message);
         attempts++;
 
         result = waitForACK(socket, msgCounter);
-
     }
     if (result == ERROR)
         return false;
-    
+
     return true;
 }
 
@@ -173,14 +174,12 @@ bool checkVerticalParity(Message message) {
     return parity == message.parity;
 }
 
-void maskMessage(Message &message)
-{
-    for(int i = 0; i < message.size; i++)
+void maskMessage(Message &message) {
+    for (int i = 0; i < message.size; i++)
         message.data[i] += 0xFF00;
 }
 
-void unmaskMessage(Message &message)
-{
-    for(int i = 0; i < message.size; i++)
+void unmaskMessage(Message &message) {
+    for (int i = 0; i < message.size; i++)
         message.data[i] -= 0xFF00;
 }
