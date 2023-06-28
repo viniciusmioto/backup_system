@@ -11,7 +11,7 @@ int main() {
 #endif
 
     // network interface eno1 (two computers)
-    char interface[] = "eno1";
+    char interface[] = "lo";
     int socket = RawSocketConnection(interface);
 
     if (socket < 0) {

@@ -164,8 +164,6 @@ void adjustMsgCounter(int *msgCounter) {
 bool checkVerticalParity(Message message) {
     unsigned char parity = 0;
 
-    return true;
-
     if (message.parity == 0)
         return true;
 
@@ -173,4 +171,16 @@ bool checkVerticalParity(Message message) {
         parity ^= message.data[i];
 
     return parity == message.parity;
+}
+
+void maskMessage(Message &message)
+{
+    for(int i = 0; i < message.size; i++)
+        message.data[i] += 0xFF00;
+}
+
+void unmaskMessage(Message &message)
+{
+    for(int i = 0; i < message.size; i++)
+        message.data[i] -= 0xFF00;
 }
