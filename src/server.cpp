@@ -22,7 +22,7 @@ int main() {
         exit(1);
     }
 
-    while (1) {
+    while (true) {
         adjustMsgCounter(&msgCounter);
 
         // receive the recvMessage from the client (TYPE)

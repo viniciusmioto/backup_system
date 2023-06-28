@@ -3,7 +3,7 @@
 
 #include "Message.hpp"
 
-#define TIMEOUT 500
+#define TIMEOUT 1000
 #define MAX_ATTEMPTS 20
 
 typedef enum {
@@ -105,9 +105,5 @@ bool checkVerticalParity(Message message);
  * \return current time in milliseconds
  */
 long long getCurrentTime();
-
-void maskMessage(Message &message);
-
-void unmaskMessage(Message &message);
 
 #endif

@@ -4,17 +4,15 @@
 #include "FileHandler.hpp"
 #include <sys/time.h>
 
-#define MAX_SIZE 67
-#define MAX_DATA_SIZE 63
+#define MAX_SIZE 81
 #define INIT_MARKER 126
 
 using namespace std;
 
 
-
 class Message {
 public:
-    unsigned int ethernetHeader[14];
+    unsigned char ethernetHeader[14];
     unsigned int initMarker : 8;
     unsigned int size : 6;
     unsigned int sequence : 6;

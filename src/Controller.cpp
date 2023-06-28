@@ -15,13 +15,7 @@ void sendFileData(int socket, string fileName, int &msgCounter) {
         // mount package with full data capacity and send it
         Message packageMsg;
         mountPackage(&fileSize, fileName, &filePosition, fileContent, packageMsg, msgCounter, &bytesRead);
-        cout << "before mask" << endl;
-        for (int i = 0; i < packageMsg.size; i++)
-            cout << static_cast<int>(packageMsg.data[i]) << " "; // Print the byte as an integer
-        cout << " " << endl;
 
-        maskMessage(packageMsg);
-        cout << "after: " << endl;
         sendMessage(socket, packageMsg);
 
         // check if the message was received
@@ -114,14 +108,19 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
     Message recvMessage;
     string fileName;
 
-    while (recvMessage.type != END_FILE) {
+    while (true) {
         recv(socket, &recvMessage, MAX_SIZE, 0);
+        if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_FILE)
+            break;
 
 #ifdef DEBUG
         cout << "\033[0;31m Waiting for msg " << msgCounter << "\033[0m" << endl;
 #endif
 
         adjustMsgCounter(&msgCounter);
+
+        if (recvMessage.initMarker == INIT_MARKER && recvMessage.sequence == msgCounter - 1)
+            sendACK(socket, msgCounter - 1);
 
         if (recvMessage.initMarker == INIT_MARKER && recvMessage.sequence == msgCounter) {
 
@@ -137,7 +136,6 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
             } else if (recvMessage.type == DATA && recvMessage.data != NULL) {
                 size_t size = recvMessage.size;
 
-                unmaskMessage(recvMessage);
                 for (int i = 0; i < recvMessage.size; i++)
                     cout << static_cast<int>(recvMessage.data[i]) << " "; // Print the byte as an integer
                 cout << " " << endl;
@@ -145,10 +143,10 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
                 // parity check: ACK or NACK
                 if (checkVerticalParity(recvMessage)) {
 
-                    write_to_file(fileName, recvMessage.data, true, size);
                     sendACK(socket, msgCounter);
                     msgCounter++;
                     adjustMsgCounter(&msgCounter);
+                    write_to_file(fileName, recvMessage.data, true, size);
 
                 } else {
                     sendNACK(socket, msgCounter);
@@ -158,22 +156,25 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
         }
     }
 
-    if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_FILE) {
-        sendACK(socket, msgCounter);
-        msgCounter++;
-        adjustMsgCounter(&msgCounter);
-        cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
-    }
+    sendACK(socket, msgCounter);
+    msgCounter++;
+    adjustMsgCounter(&msgCounter);
+    cout << "\033[0;32m backup: " << fileName << " complete.\033[0m" << endl;
 }
 
 void receiveGroupOfFiles(int socket, char interface[], int &msgCounter) {
     Message recvMessage;
     string fileName;
 
-    while (recvMessage.type != END_GROUP_OF_FILES) {
+    while (true) {
         recv(socket, &recvMessage, MAX_SIZE, 0);
+        if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_GROUP_OF_FILES)
+            break;
 
         adjustMsgCounter(&msgCounter);
+
+        if (recvMessage.initMarker == INIT_MARKER && recvMessage.sequence == msgCounter - 1)
+            sendACK(socket, msgCounter - 1);
 
         if (recvMessage.initMarker == INIT_MARKER && recvMessage.sequence == msgCounter) {
 
@@ -191,10 +192,10 @@ void receiveGroupOfFiles(int socket, char interface[], int &msgCounter) {
 
                 // parity check: ACK or NACK
                 if (checkVerticalParity(recvMessage)) {
-                    write_to_file(fileName, recvMessage.data, true, size);
                     sendACK(socket, msgCounter);
                     msgCounter++;
                     adjustMsgCounter(&msgCounter);
+                    write_to_file(fileName, recvMessage.data, true, size);
                 } else {
                     sendNACK(socket, msgCounter);
                     // do not increment msgCounter!
@@ -208,12 +209,10 @@ void receiveGroupOfFiles(int socket, char interface[], int &msgCounter) {
         }
     }
 
-    if (recvMessage.initMarker == INIT_MARKER && recvMessage.type == END_GROUP_OF_FILES) {
-        cout << " BACKUP_GROUP_OF_FILES: complete.\033[0m" << endl;
-        sendACK(socket, msgCounter);
-        msgCounter++;
-        adjustMsgCounter(&msgCounter);
-    }
+    cout << " BACKUP_GROUP_OF_FILES: complete.\033[0m" << endl;
+    sendACK(socket, msgCounter);
+    msgCounter++;
+    adjustMsgCounter(&msgCounter);
 }
 
 string getCurrentDirectory() {

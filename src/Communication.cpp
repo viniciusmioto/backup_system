@@ -28,6 +28,7 @@ int sendMessage(int socket, Message message) {
         cout << "\033[0;32m >> Send [" << message.sequence << "](" << message.type << ")|" << message.size << "|{" << message.parity << "}\033[0m " << endl;
         for (int i = 0; i < message.size; i++)
             cout << static_cast<int>(message.data[i]) << " "; // Print the byte as an integer
+        cout << " " << endl;
     }
 
 #endif
@@ -141,9 +142,9 @@ bool guaranteeSend(int socket, Message message, int msgCounter) {
         if (attempts > MAX_ATTEMPTS) {
 
 #ifdef DEBUG
-            cerr << "\033[0;35m ### ERROR: Could not send file name. \033[0m" << endl;
+            cerr << "\033[0;35m ### ERROR: Could message. \033[0m" << endl;
 #endif
-            // message.parity = 0;
+            message.parity = 0;
         }
 
         sendMessage(socket, message);
@@ -172,14 +173,4 @@ bool checkVerticalParity(Message message) {
         parity ^= message.data[i];
 
     return parity == message.parity;
-}
-
-void maskMessage(Message &message) {
-    for (int i = 0; i < message.size; i++)
-        message.data[i] += 0xFF00;
-}
-
-void unmaskMessage(Message &message) {
-    for (int i = 0; i < message.size; i++)
-        message.data[i] -= 0xFF00;
 }
