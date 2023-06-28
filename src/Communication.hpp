@@ -106,4 +106,8 @@ bool checkVerticalParity(Message message);
  */
 long long getCurrentTime();
 
+void maskMessage(Message &message);
+
+void unmaskMessage(Message &message);
+
 #endif

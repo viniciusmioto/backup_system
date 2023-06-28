@@ -15,6 +15,7 @@ void sendFileData(int socket, string fileName, int &msgCounter) {
         // mount package with full data capacity and send it
         Message packageMsg;
         mountPackage(&fileSize, fileName, &filePosition, fileContent, packageMsg, msgCounter, &bytesRead);
+        maskMessage(packageMsg);
         sendMessage(socket, packageMsg);
 
         // check if the message was received
@@ -130,8 +131,11 @@ void receiveOneFile(int socket, char interface[], int &msgCounter) {
             } else if (recvMessage.type == DATA && recvMessage.data != NULL) {
                 size_t size = recvMessage.size;
 
+                unmaskMessage(recvMessage);
+                
                 // parity check: ACK or NACK
                 if (checkVerticalParity(recvMessage)) {
+                    
                     write_to_file(fileName, recvMessage.data, true, size);
                     sendACK(socket, msgCounter);
                     msgCounter++;
