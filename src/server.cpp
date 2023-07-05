@@ -10,8 +10,8 @@ int main() {
     cout << "DEBUG MODE" << endl;
 #endif
 
-    // network interface eno1 (two computers)
-    char interface[] = "lo";
+    // network interface
+    char interface[] = "eno1";
     int socket = RawSocketConnection(interface);
     unsigned int parity = 0;
     string fileName;

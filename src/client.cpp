@@ -10,7 +10,7 @@ int main() {
     cout << "DEBUG MODE" << endl;
 #endif
 
-    // network interface eno1 (two computers)
+    // network interface
     char interface[] = "eno1";
     int socket = RawSocketConnection(interface);
 
